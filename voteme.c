@@ -1,5 +1,11 @@
 #include "utils.h"
 
+void clearinputbuff(void){
+	int c;
+	while((c = getchar())!='\n' && c!=EOF)
+		;
+}
+
 void showbanner(void){
 	FILE *fp = fopen("banner.txt", "r");
 	char buff[256];
@@ -24,7 +30,7 @@ void showabout(void){
 	);
 	typewrite(abouttext, 1000);
 	printf("\n\n%s...PRESS ENTER TO GET BACK TO THE MAIN MENU...\n%s", RED_ON_BLACK, RESET_COLORS);
-	fflush(stdin);
+	clearinputbuff();
 	getchar();
 }
 
@@ -88,9 +94,7 @@ void showmainmenu(void){
 				printf("\n%s[%s-%s] %sUnknown Option!%s\n", RESET_COLORS, RED_ON_BLACK, RESET_COLORS, RED_ON_BLACK, RESET_COLORS);
 				continue;
 		}
-		return;
 	}
-	return;
 }
 
 int main(void){

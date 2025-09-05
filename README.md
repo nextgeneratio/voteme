@@ -1,5 +1,5 @@
 # voteme
-This repository containing the souce code for parliment voting system 
+This repository containing the source code for parliament voting system 
 
 ## How to compile
 ```
