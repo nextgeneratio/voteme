@@ -94,7 +94,9 @@ void showmainmenu(void){
 				printf("\n%s[%s-%s] %sUnknown Option!%s\n", RESET_COLORS, RED_ON_BLACK, RESET_COLORS, RED_ON_BLACK, RESET_COLORS);
 				continue;
 		}
+		return;
 	}
+	return;
 }
 
 int main(void){
