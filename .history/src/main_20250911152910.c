@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "voter_register.h"
-#include "candidate_register.h"
+#include "voter_register.c"
+#include "candidate_register.c"
 
 int main() {
 	int choice;

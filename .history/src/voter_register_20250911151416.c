@@ -1,4 +1,4 @@
-#include "data_handler.h"
+#include "data_handler.c"
 #include <stdio.h>
 #include <string.h>
 
