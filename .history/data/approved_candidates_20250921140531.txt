@@ -1,2 +1,2 @@
 candidate_number, name, party_id, district_id, NIC
-0001, John, 001, 01, 200016814875
+0001, John, 01, 1, 200016814875

@@ -1,2 +1,2 @@
 voting_number,name, NIC, district_id
-00001, Mike, 200518975495, 01
+0001, Mike, 21
