@@ -1,0 +1,265 @@
+# VoteMe System - Function Usage Guide
+
+This document explains how to use the CRUD (Create, Read, Update, Delete) functions 
+implemented in the VoteMe system.
+
+## Table of Contents
+1. [File Structure](#file-structure)
+2. [Basic Operations](#basic-operations)
+3. [Working with Candidates](#working-with-candidates)
+4. [Working with Voters](#working-with-voters)
+5. [Working with Parties](#working-with-parties)
+6. [Working with Districts](#working-with-districts)
+7. [Working with Parliament Candidates](#working-with-parliament-candidates)
+8. [Working with Voter Counts](#working-with-voter-counts)
+
+## File Structure
+
+The system uses the following text files to store data:
+- `approved_candidates.txt` - List of approved candidates
+- `approved_voters.txt` - List of approved voters
+- `parliament_candidates.txt` - List of parliament candidates
+- `party_name.txt` - List of political parties
+- `voter_count.txt` - Records of voter counts
+- `district.txt` - List of districts
+
+## Basic Operations
+
+All entities support the following operations:
+- **Create** - Add a new record
+- **Read** - Retrieve a record by its primary key(s)
+- **Update** - Modify specific fields of a record
+- **Delete** - Remove a record
+
+## Working with Candidates
+
+### Create a candidate
+```c
+int create_candidate(const char *candidate_number, const char *name, const char *party_id, 
+                     const char *district_id, const char *nic);
+
+// Example:
+create_candidate("0001", "John Smith", "001", "01", "200016814875");
+```
+
+### Read a candidate
+```c
+char* read_candidate(const char *candidate_number);
+
+// Example:
+char *candidate = read_candidate("0001");
+printf("Candidate: %s\n", candidate);
+free(candidate); // Important: free the memory when done
+```
+
+### Update a candidate
+```c
+int update_candidate(const char *candidate_number, int field_index, const char *new_value);
+
+// Field indexes:
+// 0 = candidate_number
+// 1 = name
+// 2 = party_id
+// 3 = district_id
+// 4 = nic
+
+// Example - Update a candidate's name:
+update_candidate("0001", 1, "Jane Smith");
+```
+
+### Delete a candidate
+```c
+int delete_candidate(const char *candidate_number);
+
+// Example:
+delete_candidate("0001");
+```
+
+## Working with Voters
+
+### Create a voter
+```c
+int create_voter(const char *voting_number, const char *name, const char *nic, const char *district_id);
+
+// Example:
+create_voter("00001", "Mike Johnson", "200518975495", "01");
+```
+
+### Read a voter
+```c
+char* read_voter(const char *voting_number);
+
+// Example:
+char *voter = read_voter("00001");
+printf("Voter: %s\n", voter);
+free(voter); // Important: free the memory when done
+```
+
+### Update a voter
+```c
+int update_voter(const char *voting_number, int field_index, const char *new_value);
+
+// Field indexes:
+// 0 = voting_number
+// 1 = name
+// 2 = nic
+// 3 = district_id
+
+// Example - Update a voter's name:
+update_voter("00001", 1, "Michael Johnson");
+```
+
+### Delete a voter
+```c
+int delete_voter(const char *voting_number);
+
+// Example:
+delete_voter("00001");
+```
+
+## Working with Parties
+
+### Create a party
+```c
+int create_party(const char *party_id, const char *party_name);
+
+// Example:
+create_party("002", "Star");
+```
+
+### Read a party
+```c
+char* read_party(const char *party_id);
+
+// Example:
+char *party = read_party("001");
+printf("Party: %s\n", party);
+free(party); // Important: free the memory when done
+```
+
+### Update a party
+```c
+int update_party(const char *party_id, const char *new_party_name);
+
+// Example - Update a party's name:
+update_party("001", "Bell Party");
+```
+
+### Delete a party
+```c
+int delete_party(const char *party_id);
+
+// Example:
+delete_party("002");
+```
+
+## Working with Districts
+
+### Create a district
+```c
+int create_district(const char *district_id, const char *district_name);
+
+// Example:
+create_district("02", "Kandy");
+```
+
+### Read a district
+```c
+char* read_district(const char *district_id);
+
+// Example:
+char *district = read_district("01");
+printf("District: %s\n", district);
+free(district); // Important: free the memory when done
+```
+
+### Update a district
+```c
+int update_district(const char *district_id, const char *new_district_name);
+
+// Example - Update a district's name:
+update_district("01", "Colombo Central");
+```
+
+### Delete a district
+```c
+int delete_district(const char *district_id);
+
+// Example:
+delete_district("02");
+```
+
+## Working with Parliament Candidates
+
+### Create a parliament candidate
+```c
+int create_parliament_candidate(const char *candidate_number, const char *party_id);
+
+// Example:
+create_parliament_candidate("0001", "001");
+```
+
+### Read a parliament candidate
+```c
+char* read_parliament_candidate(const char *candidate_number, const char *party_id);
+
+// Example:
+char *parliament_candidate = read_parliament_candidate("0001", "001");
+printf("Parliament Candidate: %s\n", parliament_candidate);
+free(parliament_candidate); // Important: free the memory when done
+```
+
+### Delete a parliament candidate
+```c
+int delete_parliament_candidate(const char *candidate_number, const char *party_id);
+
+// Example:
+delete_parliament_candidate("0001", "001");
+```
+
+## Working with Voter Counts
+
+### Create a voter count record
+```c
+int create_voter_count(const char *voting_number, const char *candidate_number, 
+                       const char *party_id, const char *district_id, const char *count);
+
+// Example:
+create_voter_count("00001", "0001", "001", "01", "257");
+```
+
+### Read a voter count
+```c
+char* read_voter_count(const char *voting_number, const char *candidate_number, 
+                       const char *party_id, const char *district_id);
+
+// Example:
+char *vote_count = read_voter_count("00001", "0001", "001", "01");
+printf("Vote Count: %s\n", vote_count);
+free(vote_count); // Important: free the memory when done
+```
+
+### Update a voter count
+```c
+int update_voter_count(const char *voting_number, const char *candidate_number, 
+                       const char *party_id, const char *district_id, const char *new_count);
+
+// Example:
+update_voter_count("00001", "0001", "001", "01", "300");
+```
+
+### Delete a voter count
+```c
+int delete_voter_count(const char *voting_number, const char *candidate_number, 
+                       const char *party_id, const char *district_id);
+
+// Example:
+delete_voter_count("00001", "0001", "001", "01");
+```
+
+## Important Notes
+
+1. All functions return an integer (1 for success, 0 for failure), except for read functions which return a string.
+2. Always free the memory returned by read functions after use to avoid memory leaks.
+3. When updating, be careful to use the correct field index for the entity you're updating.
+4. The system relies on proper formatting of the CSV files - do not modify them manually unless you understand the format.
