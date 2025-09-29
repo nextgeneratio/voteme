@@ -1,2 +1,2 @@
 voting_number,name, NIC, district_id
-00001, John, 200518975495, 01
+John Doe, Mike, 200518975495, 01
