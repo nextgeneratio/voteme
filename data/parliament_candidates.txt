@@ -1,2 +1,4 @@
 candidate_number,party_id
-0001, 001
+C001,P01
+C002,P02
+C003,P01

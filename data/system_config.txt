@@ -1,0 +1,10 @@
+# VoteMe System Configuration
+# Generated automatically - modify with admin interface
+
+max_voters=10000
+max_candidates=500
+min_votes_for_parliament=100
+max_parliament_members=225
+max_parties=50
+max_districts=25
+voting_enabled=1

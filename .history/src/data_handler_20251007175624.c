@@ -135,13 +135,6 @@ int update_record(const char *filename, char *primary_keys[], int num_keys, cons
 	if (!fp)
 		return 0;
 
-	// Check for NULL inputs
-	if (!primary_keys || num_keys <= 0 || !field_to_update)
-	{
-		fclose(fp);
-		return 0;
-	}
-
 	char content[MAX_LINE_LENGTH * 1000]; // Assuming file won't exceed this size
 	content[0] = '\0';
 
@@ -361,224 +354,201 @@ int delete_record(const char *filename, char *primary_keys[], int num_keys)
 /* ==== Entity-Specific CRUD Functions ==== */
 
 /* === Candidate Functions === */
-int create_candidate(const char *candidate_number, const char *name, const char *party_id,
-					 const char *district_id, const char *nic)
-{
-	char record[MAX_LINE_LENGTH];
-	snprintf(record, sizeof(record), "%s, %s, %s, %s, %s",
-			 candidate_number, name, party_id, district_id, nic);
-	return create_record("../../data/approved_candidates.txt", record);
+int create_candidate(const char *candidate_number, const char *name, const char *party_id, 
+                     const char *district_id, const char *nic) {
+    char record[MAX_LINE_LENGTH];
+    snprintf(record, sizeof(record), "%s, %s, %s, %s, %s", 
+             candidate_number, name, party_id, district_id, nic);
+    return create_record("../data/approved_candidates.txt", record);
 }
 
-char *read_candidate(const char *candidate_number)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", candidate_number);
-	char *primary_keys[] = {key};
-	return read_record("../../data/approved_candidates.txt", primary_keys, 1);
+char *read_candidate(const char *candidate_number) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", candidate_number);
+    char *primary_keys[] = {key};
+    return read_record("../data/approved_candidates.txt", primary_keys, 1);
 }
 
-int update_candidate(const char *candidate_number, int field_index, const char *new_value)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", candidate_number);
-	char *primary_keys[] = {key};
-
-	char field_update[MAX_LINE_LENGTH];
-	snprintf(field_update, sizeof(field_update), "%d:%s", field_index, new_value);
-
-	return update_record("../../data/approved_candidates.txt", primary_keys, 1, field_update);
+int update_candidate(const char *candidate_number, int field_index, const char *new_value) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", candidate_number);
+    char *primary_keys[] = {key};
+    
+    char field_update[MAX_LINE_LENGTH];
+    snprintf(field_update, sizeof(field_update), "%d:%s", field_index, new_value);
+    
+    return update_record("../data/approved_candidates.txt", primary_keys, 1, field_update);
 }
 
-int delete_candidate(const char *candidate_number)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", candidate_number);
-	char *primary_keys[] = {key};
-	return delete_record("../../data/approved_candidates.txt", primary_keys, 1);
+int delete_candidate(const char *candidate_number) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", candidate_number);
+    char *primary_keys[] = {key};
+    return delete_record("../data/approved_candidates.txt", primary_keys, 1);
 }
 
 /* === Voter Functions === */
-int create_voter(const char *voting_number, const char *name, const char *nic, const char *district_id)
-{
-	char record[MAX_LINE_LENGTH];
-	snprintf(record, sizeof(record), "%s, %s, %s, %s",
-			 voting_number, name, nic, district_id);
-	return create_record("../../data/approved_voters.txt", record);
+int create_voter(const char *voting_number, const char *name, const char *nic, const char *district_id) {
+    char record[MAX_LINE_LENGTH];
+    snprintf(record, sizeof(record), "%s, %s, %s, %s", 
+             voting_number, name, nic, district_id);
+    return create_record("../data/approved_voters.txt", record);
 }
 
-char *read_voter(const char *voting_number)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", voting_number);
-	char *primary_keys[] = {key};
-	return read_record("../../data/approved_voters.txt", primary_keys, 1);
+char *read_voter(const char *voting_number) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", voting_number);
+    char *primary_keys[] = {key};
+    return read_record("../data/approved_voters.txt", primary_keys, 1);
 }
 
-int update_voter(const char *voting_number, int field_index, const char *new_value)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", voting_number);
-	char *primary_keys[] = {key};
-
-	char field_update[MAX_LINE_LENGTH];
-	snprintf(field_update, sizeof(field_update), "%d:%s", field_index, new_value);
-
-	return update_record("../../data/approved_voters.txt", primary_keys, 1, field_update);
+int update_voter(const char *voting_number, int field_index, const char *new_value) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", voting_number);
+    char *primary_keys[] = {key};
+    
+    char field_update[MAX_LINE_LENGTH];
+    snprintf(field_update, sizeof(field_update), "%d:%s", field_index, new_value);
+    
+    return update_record("../data/approved_voters.txt", primary_keys, 1, field_update);
 }
 
-int delete_voter(const char *voting_number)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", voting_number);
-	char *primary_keys[] = {key};
-	return delete_record("../../data/approved_voters.txt", primary_keys, 1);
+int delete_voter(const char *voting_number) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", voting_number);
+    char *primary_keys[] = {key};
+    return delete_record("../data/approved_voters.txt", primary_keys, 1);
 }
 
 /* === Party Functions === */
-int create_party(const char *party_id, const char *party_name)
-{
-	char record[MAX_LINE_LENGTH];
-	snprintf(record, sizeof(record), "%s, %s", party_id, party_name);
-	return create_record("../../data/party_name.txt", record);
+int create_party(const char *party_id, const char *party_name) {
+    char record[MAX_LINE_LENGTH];
+    snprintf(record, sizeof(record), "%s, %s", party_id, party_name);
+    return create_record("../data/party_name.txt", record);
 }
 
-char *read_party(const char *party_id)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", party_id);
-	char *primary_keys[] = {key};
-	return read_record("../../data/party_name.txt", primary_keys, 1);
+char *read_party(const char *party_id) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", party_id);
+    char *primary_keys[] = {key};
+    return read_record("../data/party_name.txt", primary_keys, 1);
 }
 
-int update_party(const char *party_id, const char *new_party_name)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", party_id);
-	char *primary_keys[] = {key};
-
-	char field_update[MAX_LINE_LENGTH];
-	snprintf(field_update, sizeof(field_update), "1:%s", new_party_name);
-
-	return update_record("../../data/party_name.txt", primary_keys, 1, field_update);
+int update_party(const char *party_id, const char *new_party_name) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", party_id);
+    char *primary_keys[] = {key};
+    
+    char field_update[MAX_LINE_LENGTH];
+    snprintf(field_update, sizeof(field_update), "1:%s", new_party_name);
+    
+    return update_record("../data/party_name.txt", primary_keys, 1, field_update);
 }
 
-int delete_party(const char *party_id)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", party_id);
-	char *primary_keys[] = {key};
-	return delete_record("../../data/party_name.txt", primary_keys, 1);
+int delete_party(const char *party_id) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", party_id);
+    char *primary_keys[] = {key};
+    return delete_record("../data/party_name.txt", primary_keys, 1);
 }
 
 /* === District Functions === */
-int create_district(const char *district_id, const char *district_name)
-{
-	char record[MAX_LINE_LENGTH];
-	snprintf(record, sizeof(record), "%s, %s", district_id, district_name);
-	return create_record("../../data/district.txt", record);
+int create_district(const char *district_id, const char *district_name) {
+    char record[MAX_LINE_LENGTH];
+    snprintf(record, sizeof(record), "%s, %s", district_id, district_name);
+    return create_record("../data/district.txt", record);
 }
 
-char *read_district(const char *district_id)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", district_id);
-	char *primary_keys[] = {key};
-	return read_record("../../data/district.txt", primary_keys, 1);
+char *read_district(const char *district_id) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", district_id);
+    char *primary_keys[] = {key};
+    return read_record("../data/district.txt", primary_keys, 1);
 }
 
-int update_district(const char *district_id, const char *new_district_name)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", district_id);
-	char *primary_keys[] = {key};
-
-	char field_update[MAX_LINE_LENGTH];
-	snprintf(field_update, sizeof(field_update), "1:%s", new_district_name);
-
-	return update_record("../../data/district.txt", primary_keys, 1, field_update);
+int update_district(const char *district_id, const char *new_district_name) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", district_id);
+    char *primary_keys[] = {key};
+    
+    char field_update[MAX_LINE_LENGTH];
+    snprintf(field_update, sizeof(field_update), "1:%s", new_district_name);
+    
+    return update_record("../data/district.txt", primary_keys, 1, field_update);
 }
 
-int delete_district(const char *district_id)
-{
-	char key[MAX_LINE_LENGTH];
-	snprintf(key, sizeof(key), "0:%s", district_id);
-	char *primary_keys[] = {key};
-	return delete_record("../../data/district.txt", primary_keys, 1);
+int delete_district(const char *district_id) {
+    char key[MAX_LINE_LENGTH];
+    snprintf(key, sizeof(key), "0:%s", district_id);
+    char *primary_keys[] = {key};
+    return delete_record("../data/district.txt", primary_keys, 1);
 }
 
 /* === Parliament Candidate Functions === */
-int create_parliament_candidate(const char *candidate_number, const char *party_id)
-{
-	char record[MAX_LINE_LENGTH];
-	snprintf(record, sizeof(record), "%s, %s", candidate_number, party_id);
-	return create_record("../../data/parliament_candidates.txt", record);
+int create_parliament_candidate(const char *candidate_number, const char *party_id) {
+    char record[MAX_LINE_LENGTH];
+    snprintf(record, sizeof(record), "%s, %s", candidate_number, party_id);
+    return create_record("../data/parliament_candidates.txt", record);
 }
 
-char *read_parliament_candidate(const char *candidate_number, const char *party_id)
-{
-	char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH];
-	snprintf(key1, sizeof(key1), "0:%s", candidate_number);
-	snprintf(key2, sizeof(key2), "1:%s", party_id);
-	char *primary_keys[] = {key1, key2};
-	return read_record("../../data/parliament_candidates.txt", primary_keys, 2);
+char *read_parliament_candidate(const char *candidate_number, const char *party_id) {
+    char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH];
+    snprintf(key1, sizeof(key1), "0:%s", candidate_number);
+    snprintf(key2, sizeof(key2), "1:%s", party_id);
+    char *primary_keys[] = {key1, key2};
+    return read_record("../data/parliament_candidates.txt", primary_keys, 2);
 }
 
-int delete_parliament_candidate(const char *candidate_number, const char *party_id)
-{
-	char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH];
-	snprintf(key1, sizeof(key1), "0:%s", candidate_number);
-	snprintf(key2, sizeof(key2), "1:%s", party_id);
-	char *primary_keys[] = {key1, key2};
-	return delete_record("../../data/parliament_candidates.txt", primary_keys, 2);
+int delete_parliament_candidate(const char *candidate_number, const char *party_id) {
+    char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH];
+    snprintf(key1, sizeof(key1), "0:%s", candidate_number);
+    snprintf(key2, sizeof(key2), "1:%s", party_id);
+    char *primary_keys[] = {key1, key2};
+    return delete_record("../data/parliament_candidates.txt", primary_keys, 2);
 }
 
 /* === Voter Count Functions === */
 int create_voter_count(const char *voting_number, const char *candidate_number,
-					   const char *party_id, const char *district_id, const char *count)
-{
-	char record[MAX_LINE_LENGTH];
-	snprintf(record, sizeof(record), "%s, %s, %s, %s, %s",
-			 voting_number, candidate_number, party_id, district_id, count);
-	return create_record("../../data/voter_count.txt", record);
+                       const char *party_id, const char *district_id, const char *count) {
+    char record[MAX_LINE_LENGTH];
+    snprintf(record, sizeof(record), "%s, %s, %s, %s, %s", 
+             voting_number, candidate_number, party_id, district_id, count);
+    return create_record("../data/voter_count.txt", record);
 }
 
 char *read_voter_count(const char *voting_number, const char *candidate_number,
-					   const char *party_id, const char *district_id)
-{
-	char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH], key3[MAX_LINE_LENGTH], key4[MAX_LINE_LENGTH];
-	snprintf(key1, sizeof(key1), "0:%s", voting_number);
-	snprintf(key2, sizeof(key2), "1:%s", candidate_number);
-	snprintf(key3, sizeof(key3), "2:%s", party_id);
-	snprintf(key4, sizeof(key4), "3:%s", district_id);
-	char *primary_keys[] = {key1, key2, key3, key4};
-	return read_record("../../data/voter_count.txt", primary_keys, 4);
+                       const char *party_id, const char *district_id) {
+    char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH], key3[MAX_LINE_LENGTH], key4[MAX_LINE_LENGTH];
+    snprintf(key1, sizeof(key1), "0:%s", voting_number);
+    snprintf(key2, sizeof(key2), "1:%s", candidate_number);
+    snprintf(key3, sizeof(key3), "2:%s", party_id);
+    snprintf(key4, sizeof(key4), "3:%s", district_id);
+    char *primary_keys[] = {key1, key2, key3, key4};
+    return read_record("../data/voter_count.txt", primary_keys, 4);
 }
 
 int update_voter_count(const char *voting_number, const char *candidate_number,
-					   const char *party_id, const char *district_id, const char *new_count)
-{
-	char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH], key3[MAX_LINE_LENGTH], key4[MAX_LINE_LENGTH];
-	snprintf(key1, sizeof(key1), "0:%s", voting_number);
-	snprintf(key2, sizeof(key2), "1:%s", candidate_number);
-	snprintf(key3, sizeof(key3), "2:%s", party_id);
-	snprintf(key4, sizeof(key4), "3:%s", district_id);
-	char *primary_keys[] = {key1, key2, key3, key4};
-
-	char field_update[MAX_LINE_LENGTH];
-	snprintf(field_update, sizeof(field_update), "4:%s", new_count);
-
-	return update_record("../../data/voter_count.txt", primary_keys, 4, field_update);
+                       const char *party_id, const char *district_id, const char *new_count) {
+    char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH], key3[MAX_LINE_LENGTH], key4[MAX_LINE_LENGTH];
+    snprintf(key1, sizeof(key1), "0:%s", voting_number);
+    snprintf(key2, sizeof(key2), "1:%s", candidate_number);
+    snprintf(key3, sizeof(key3), "2:%s", party_id);
+    snprintf(key4, sizeof(key4), "3:%s", district_id);
+    char *primary_keys[] = {key1, key2, key3, key4};
+    
+    char field_update[MAX_LINE_LENGTH];
+    snprintf(field_update, sizeof(field_update), "4:%s", new_count);
+    
+    return update_record("../data/voter_count.txt", primary_keys, 4, field_update);
 }
 
 int delete_voter_count(const char *voting_number, const char *candidate_number,
-					   const char *party_id, const char *district_id)
-{
-	char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH], key3[MAX_LINE_LENGTH], key4[MAX_LINE_LENGTH];
-	snprintf(key1, sizeof(key1), "0:%s", voting_number);
-	snprintf(key2, sizeof(key2), "1:%s", candidate_number);
-	snprintf(key3, sizeof(key3), "2:%s", party_id);
-	snprintf(key4, sizeof(key4), "3:%s", district_id);
-	char *primary_keys[] = {key1, key2, key3, key4};
-	return delete_record("../../data/voter_count.txt", primary_keys, 4);
+                       const char *party_id, const char *district_id) {
+    char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH], key3[MAX_LINE_LENGTH], key4[MAX_LINE_LENGTH];
+    snprintf(key1, sizeof(key1), "0:%s", voting_number);
+    snprintf(key2, sizeof(key2), "1:%s", candidate_number);
+    snprintf(key3, sizeof(key3), "2:%s", party_id);
+    snprintf(key4, sizeof(key4), "3:%s", district_id);
+    char *primary_keys[] = {key1, key2, key3, key4};
+    return delete_record("../data/voter_count.txt", primary_keys, 4);
 }

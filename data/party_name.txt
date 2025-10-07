@@ -1,2 +1,4 @@
 party_id,party_name
-001,Bell
+P01,Progressive Party
+P02,Conservative Party
+P03,Liberal Party

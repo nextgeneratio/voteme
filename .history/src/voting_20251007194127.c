@@ -27,8 +27,7 @@
 #define BOLD "\033[1m"
 
 // Voting results structure
-typedef struct
-{
+typedef struct {
     char candidate_number[20];
     char candidate_name[100];
     char party_id[20];
@@ -38,8 +37,7 @@ typedef struct
 } candidate_result_t;
 
 // Voting statistics structure
-typedef struct
-{
+typedef struct {
     int total_candidates;
     int total_votes_cast;
     int qualified_candidates;
@@ -56,48 +54,38 @@ typedef struct
  * @param max_candidates Maximum number of candidates
  * @return Number of candidates loaded
  */
-static int load_candidate_votes(candidate_result_t candidates[], int max_candidates)
-{
+static int load_candidate_votes(candidate_result_t candidates[], int max_candidates) {
     FILE *votes_file = fopen("data/votes.txt", "r");
     FILE *candidates_file = fopen("data/approved_candidates.txt", "r");
-
-    if (!votes_file || !candidates_file)
-    {
+    
+    if (!votes_file || !candidates_file) {
         printf(RED "❌ Error: Unable to open voting files!\n" RESET);
-        if (votes_file)
-            fclose(votes_file);
-        if (candidates_file)
-            fclose(candidates_file);
+        if (votes_file) fclose(votes_file);
+        if (candidates_file) fclose(candidates_file);
         return 0;
     }
 
     // Initialize candidate data from approved candidates
     char line[256];
     int candidate_count = 0;
-
+    
     // Skip header in candidates file
-    if (fgets(line, sizeof(line), candidates_file))
-    {
-        while (fgets(line, sizeof(line), candidates_file) && candidate_count < max_candidates)
-        {
+    if (fgets(line, sizeof(line), candidates_file)) {
+        while (fgets(line, sizeof(line), candidates_file) && candidate_count < max_candidates) {
             char *token = strtok(line, ",");
-            if (!token)
-                continue;
-
+            if (!token) continue;
+            
             strcpy(candidates[candidate_count].candidate_number, token);
-
+            
             token = strtok(NULL, ",");
-            if (token)
-                strcpy(candidates[candidate_count].candidate_name, token);
-
+            if (token) strcpy(candidates[candidate_count].candidate_name, token);
+            
             token = strtok(NULL, ",");
-            if (token)
-                strcpy(candidates[candidate_count].party_id, token);
-
+            if (token) strcpy(candidates[candidate_count].party_id, token);
+            
             token = strtok(NULL, ",");
-            if (token)
-                strcpy(candidates[candidate_count].district_id, token);
-
+            if (token) strcpy(candidates[candidate_count].district_id, token);
+            
             candidates[candidate_count].vote_count = 0;
             candidates[candidate_count].qualified_for_parliament = 0;
             candidate_count++;
@@ -107,21 +95,16 @@ static int load_candidate_votes(candidate_result_t candidates[], int max_candida
 
     // Count votes for each candidate
     rewind(votes_file);
-    if (fgets(line, sizeof(line), votes_file))
-    { // Skip header
-        while (fgets(line, sizeof(line), votes_file))
-        {
+    if (fgets(line, sizeof(line), votes_file)) { // Skip header
+        while (fgets(line, sizeof(line), votes_file)) {
             char voter_id[20], candidate_id[20];
-            if (sscanf(line, "%[^,],%s", voter_id, candidate_id) == 2)
-            {
+            if (sscanf(line, "%[^,],%s", voter_id, candidate_id) == 2) {
                 // Remove newline character
                 candidate_id[strcspn(candidate_id, "\n")] = 0;
-
+                
                 // Find candidate and increment vote count
-                for (int i = 0; i < candidate_count; i++)
-                {
-                    if (strcmp(candidates[i].candidate_number, candidate_id) == 0)
-                    {
+                for (int i = 0; i < candidate_count; i++) {
+                    if (strcmp(candidates[i].candidate_number, candidate_id) == 0) {
                         candidates[i].vote_count++;
                         break;
                     }
@@ -137,8 +120,7 @@ static int load_candidate_votes(candidate_result_t candidates[], int max_candida
 /**
  * Comparison function for sorting candidates by vote count (descending)
  */
-static int compare_candidates(const void *a, const void *b)
-{
+static int compare_candidates(const void *a, const void *b) {
     const candidate_result_t *ca = (const candidate_result_t *)a;
     const candidate_result_t *cb = (const candidate_result_t *)b;
     return cb->vote_count - ca->vote_count; // Descending order
@@ -152,23 +134,20 @@ static int compare_candidates(const void *a, const void *b)
  * @param max_parliament_seats Maximum parliament seats available
  * @return Number of parliament members selected
  */
-static int select_parliament_members(candidate_result_t candidates[], int candidate_count,
-                                     int min_votes, int max_parliament_seats)
-{
+static int select_parliament_members(candidate_result_t candidates[], int candidate_count, 
+                                   int min_votes, int max_parliament_seats) {
     // Sort candidates by vote count (highest first)
     qsort(candidates, candidate_count, sizeof(candidate_result_t), compare_candidates);
-
+    
     int parliament_members = 0;
-
-    for (int i = 0; i < candidate_count && parliament_members < max_parliament_seats; i++)
-    {
-        if (candidates[i].vote_count >= min_votes)
-        {
+    
+    for (int i = 0; i < candidate_count && parliament_members < max_parliament_seats; i++) {
+        if (candidates[i].vote_count >= min_votes) {
             candidates[i].qualified_for_parliament = 1;
             parliament_members++;
         }
     }
-
+    
     return parliament_members;
 }
 
@@ -178,24 +157,23 @@ static int select_parliament_members(candidate_result_t candidates[], int candid
  * @param candidate_count Total number of candidates
  * @param stats Voting statistics
  */
-static void generate_results_report(candidate_result_t candidates[], int candidate_count,
-                                    voting_statistics_t *stats)
-{
+static void generate_results_report(candidate_result_t candidates[], int candidate_count, 
+                                  voting_statistics_t *stats) {
     printf("\n");
     printf(BOLD CYAN "═══════════════════════════════════════════════════════════════════════════════\n");
     printf("                           🗳️  VOTING RESULTS REPORT 🗳️                           \n");
     printf("═══════════════════════════════════════════════════════════════════════════════\n" RESET);
-
+    
     // Voting Statistics
     printf(BOLD YELLOW "\n📊 VOTING STATISTICS:\n" RESET);
     printf("┌─────────────────────────────────────────────────────────────────────────────┐\n");
-    printf("│ " BLUE "Total Candidates:" RESET "        %-8d │ " BLUE "Total Votes Cast:" RESET "       %-8d │\n",
+    printf("│ " BLUE "Total Candidates:" RESET "        %-8d │ " BLUE "Total Votes Cast:" RESET "       %-8d │\n", 
            stats->total_candidates, stats->total_votes_cast);
-    printf("│ " BLUE "Qualified Candidates:" RESET "    %-8d │ " BLUE "Parliament Members:" RESET "     %-8d │\n",
+    printf("│ " BLUE "Qualified Candidates:" RESET "    %-8d │ " BLUE "Parliament Members:" RESET "     %-8d │\n", 
            stats->qualified_candidates, stats->parliament_members_selected);
-    printf("│ " BLUE "Min Votes Required:" RESET "      %-8d │ " BLUE "Max Parliament Seats:" RESET "   %-8d │\n",
+    printf("│ " BLUE "Min Votes Required:" RESET "      %-8d │ " BLUE "Max Parliament Seats:" RESET "   %-8d │\n", 
            stats->min_votes_threshold, stats->max_parliament_seats);
-    printf("│ " BLUE "Voting Date:" RESET "             %-25s │ " BLUE "Time:" RESET " %-15s │\n",
+    printf("│ " BLUE "Voting Date:" RESET "             %-25s │ " BLUE "Time:" RESET " %-15s │\n", 
            stats->voting_date, stats->voting_time);
     printf("└─────────────────────────────────────────────────────────────────────────────┘\n");
 
@@ -204,12 +182,10 @@ static void generate_results_report(candidate_result_t candidates[], int candida
     printf("┌─────────────────────────────────────────────────────────────────────────────┐\n");
     printf("│ " BOLD "Rank │ Candidate │      Name      │ Party │ District │ Votes │ Status" RESET " │\n");
     printf("├─────────────────────────────────────────────────────────────────────────────┤\n");
-
+    
     int rank = 1;
-    for (int i = 0; i < candidate_count; i++)
-    {
-        if (candidates[i].qualified_for_parliament)
-        {
+    for (int i = 0; i < candidate_count; i++) {
+        if (candidates[i].qualified_for_parliament) {
             printf("│ %4d │ %-9s │ %-14s │ %-5s │ %-8s │ %5d │ " GREEN "✓ MP" RESET "   │\n",
                    rank++, candidates[i].candidate_number, candidates[i].candidate_name,
                    candidates[i].party_id, candidates[i].district_id, candidates[i].vote_count);
@@ -222,11 +198,13 @@ static void generate_results_report(candidate_result_t candidates[], int candida
     printf("┌─────────────────────────────────────────────────────────────────────────────┐\n");
     printf("│ " BOLD "Rank │ Candidate │      Name      │ Party │ District │ Votes │ Status" RESET " │\n");
     printf("├─────────────────────────────────────────────────────────────────────────────┤\n");
-
-    for (int i = 0; i < candidate_count; i++)
-    {
-        const char *status = candidates[i].qualified_for_parliament ? GREEN "✓ MP" RESET : (candidates[i].vote_count >= stats->min_votes_threshold ? YELLOW "~ Qualified" RESET : RED "✗ Failed" RESET);
-
+    
+    for (int i = 0; i < candidate_count; i++) {
+        const char *status = candidates[i].qualified_for_parliament ? 
+                            GREEN "✓ MP" RESET : 
+                            (candidates[i].vote_count >= stats->min_votes_threshold ? 
+                             YELLOW "~ Qualified" RESET : RED "✗ Failed" RESET);
+        
         printf("│ %4d │ %-9s │ %-14s │ %-5s │ %-8s │ %5d │ %-12s │\n",
                i + 1, candidates[i].candidate_number, candidates[i].candidate_name,
                candidates[i].party_id, candidates[i].district_id, candidates[i].vote_count, status);
@@ -240,12 +218,10 @@ static void generate_results_report(candidate_result_t candidates[], int candida
  * @param candidate_count Total number of candidates
  * @param stats Voting statistics
  */
-static void save_results_to_file(candidate_result_t candidates[], int candidate_count,
-                                 voting_statistics_t *stats)
-{
+static void save_results_to_file(candidate_result_t candidates[], int candidate_count, 
+                                voting_statistics_t *stats) {
     FILE *results_file = fopen("data/voting_results.txt", "w");
-    if (!results_file)
-    {
+    if (!results_file) {
         printf(RED "❌ Error: Unable to save results to file!\n" RESET);
         return;
     }
@@ -259,32 +235,29 @@ static void save_results_to_file(candidate_result_t candidates[], int candidate_
     fprintf(results_file, "parliament_members_selected=%d\n", stats->parliament_members_selected);
     fprintf(results_file, "min_votes_threshold=%d\n", stats->min_votes_threshold);
     fprintf(results_file, "max_parliament_seats=%d\n", stats->max_parliament_seats);
-
+    
     fprintf(results_file, "\n[PARLIAMENT_MEMBERS]\n");
     fprintf(results_file, "candidate_number,name,party_id,district_id,votes,rank\n");
     int rank = 1;
-    for (int i = 0; i < candidate_count; i++)
-    {
-        if (candidates[i].qualified_for_parliament)
-        {
+    for (int i = 0; i < candidate_count; i++) {
+        if (candidates[i].qualified_for_parliament) {
             fprintf(results_file, "%s,%s,%s,%s,%d,%d\n",
                     candidates[i].candidate_number, candidates[i].candidate_name,
                     candidates[i].party_id, candidates[i].district_id,
                     candidates[i].vote_count, rank++);
         }
     }
-
+    
     fprintf(results_file, "\n[ALL_RESULTS]\n");
     fprintf(results_file, "candidate_number,name,party_id,district_id,votes,rank,qualified_for_parliament\n");
-    for (int i = 0; i < candidate_count; i++)
-    {
+    for (int i = 0; i < candidate_count; i++) {
         fprintf(results_file, "%s,%s,%s,%s,%d,%d,%s\n",
                 candidates[i].candidate_number, candidates[i].candidate_name,
                 candidates[i].party_id, candidates[i].district_id,
                 candidates[i].vote_count, i + 1,
                 candidates[i].qualified_for_parliament ? "YES" : "NO");
     }
-
+    
     fclose(results_file);
     printf(GREEN "💾 Results saved to 'data/voting_results.txt'\n" RESET);
 }
@@ -295,15 +268,13 @@ static void save_results_to_file(candidate_result_t candidates[], int candidate_
  * @param max_parliament_members Maximum number of parliament seats
  * @return DATA_SUCCESS on success, error code on failure
  */
-int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
-{
+int execute_voting_algorithm(int min_votes_required, int max_parliament_members) {
     printf(BOLD CYAN "\n🗳️  STARTING VOTING ALGORITHM...\n" RESET);
     printf("═══════════════════════════════════════════════════════════════════════════════\n");
-
+    
     // Check if votes file exists
     FILE *votes_check = fopen("data/votes.txt", "r");
-    if (!votes_check)
-    {
+    if (!votes_check) {
         printf(RED "❌ Error: No votes file found! Please ensure voting has taken place.\n" RESET);
         return DATA_ERROR_FILE_NOT_FOUND;
     }
@@ -312,8 +283,7 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
     // Initialize candidate results array
     const int MAX_CANDIDATES = 1000;
     candidate_result_t *candidates = malloc(MAX_CANDIDATES * sizeof(candidate_result_t));
-    if (!candidates)
-    {
+    if (!candidates) {
         printf(RED "❌ Error: Memory allocation failed!\n" RESET);
         return DATA_ERROR_MEMORY_ALLOCATION;
     }
@@ -321,8 +291,7 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
     // Load candidate votes
     printf(YELLOW "📊 Loading candidate data and vote counts...\n" RESET);
     int candidate_count = load_candidate_votes(candidates, MAX_CANDIDATES);
-    if (candidate_count == 0)
-    {
+    if (candidate_count == 0) {
         printf(RED "❌ Error: No candidates found or unable to load data!\n" RESET);
         free(candidates);
         return DATA_ERROR_FILE_NOT_FOUND;
@@ -330,8 +299,7 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
 
     // Calculate total votes
     int total_votes = 0;
-    for (int i = 0; i < candidate_count; i++)
-    {
+    for (int i = 0; i < candidate_count; i++) {
         total_votes += candidates[i].vote_count;
     }
 
@@ -339,15 +307,13 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
 
     // Apply voting algorithm
     printf(YELLOW "🏛️  Applying parliament selection algorithm...\n" RESET);
-    int parliament_members = select_parliament_members(candidates, candidate_count,
-                                                       min_votes_required, max_parliament_members);
+    int parliament_members = select_parliament_members(candidates, candidate_count, 
+                                                     min_votes_required, max_parliament_members);
 
     // Count qualified candidates (those meeting minimum vote requirement)
     int qualified_count = 0;
-    for (int i = 0; i < candidate_count; i++)
-    {
-        if (candidates[i].vote_count >= min_votes_required)
-        {
+    for (int i = 0; i < candidate_count; i++) {
+        if (candidates[i].vote_count >= min_votes_required) {
             qualified_count++;
         }
     }
@@ -387,33 +353,30 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
 /**
  * Create sample votes file for testing (if it doesn't exist)
  */
-int create_sample_votes_file(void)
-{
+int create_sample_votes_file(void) {
     // Check if votes file already exists
     FILE *check = fopen("data/votes.txt", "r");
-    if (check)
-    {
+    if (check) {
         fclose(check);
         return DATA_SUCCESS; // File already exists
     }
 
     // Create sample votes
     FILE *votes_file = fopen("data/votes.txt", "w");
-    if (!votes_file)
-    {
+    if (!votes_file) {
         return DATA_ERROR_FILE_NOT_FOUND;
     }
 
     fprintf(votes_file, "voter_id,candidate_id\n");
-
+    
     // Generate some sample votes
     // Simulate voting patterns
     fprintf(votes_file, "V001,C001\n"); // John votes for Alice
-    fprintf(votes_file, "V002,C001\n"); // Jane votes for Alice
+    fprintf(votes_file, "V002,C001\n"); // Jane votes for Alice  
     fprintf(votes_file, "V003,C002\n"); // Bob votes for Charlie
-
+    
     fclose(votes_file);
-
+    
     printf(GREEN "📁 Sample votes file created with 3 votes\n" RESET);
     return DATA_SUCCESS;
 }
@@ -423,8 +386,7 @@ int create_sample_votes_file(void)
  * @param min_votes Minimum votes required
  * @param max_parliament_seats Maximum parliament seats
  */
-void display_voting_parameters(int min_votes, int max_parliament_seats)
-{
+void display_voting_parameters(int min_votes, int max_parliament_seats) {
     printf(BOLD YELLOW "\n⚙️  VOTING ALGORITHM PARAMETERS:\n" RESET);
     printf("┌─────────────────────────────────────────────────────────────────┐\n");
     printf("│ " BLUE "Minimum Votes for Parliament:" RESET "    %-8d                │\n", min_votes);

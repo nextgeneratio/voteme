@@ -77,7 +77,6 @@ void display_main_menu(void);
 void handle_crud_operations(void);
 void handle_data_viewing(void);
 void handle_voting_algorithm(void);
-void handle_voting_algorithm(void);
 void handle_system_limits(void);
 void display_banner(void);
 void pause_for_user(void);
@@ -155,7 +154,7 @@ int main(void)
     do
     {
         display_main_menu();
-        choice = get_user_choice("Enter your choice", 0, 5);
+        choice = get_user_choice("Enter your choice", 0, 4);
 
         switch (choice)
         {
@@ -1602,122 +1601,4 @@ void clear_screen(void)
     { /* Ignore */
     }
 #endif
-}
-
-// =====================================================
-// Voting Algorithm Handler
-// =====================================================
-
-void handle_voting_algorithm(void)
-{
-    clear_screen();
-    printf(BOLD CYAN "🗳️  VoteMe Voting Algorithm\n" RESET);
-    printf("═══════════════════════════════════════\n\n");
-
-    // Display current voting parameters
-    display_voting_parameters(sys_config.min_votes_for_parliament, sys_config.max_parliament_members);
-
-    // Check if voting is enabled
-    if (!sys_config.voting_enabled)
-    {
-        printf(RED "\n❌ Warning: Voting is currently disabled in system configuration!\n" RESET);
-        printf(YELLOW "Would you like to enable voting now? (y/n): " RESET);
-
-        char response;
-        if (scanf(" %c", &response) != 1)
-        {
-            response = 'n';
-        }
-
-        if (response == 'y' || response == 'Y')
-        {
-            sys_config.voting_enabled = 1;
-            save_system_config();
-            printf(GREEN "✅ Voting has been enabled!\n" RESET);
-        }
-        else
-        {
-            printf(YELLOW "⚠️  Voting remains disabled. Algorithm execution cancelled.\n" RESET);
-            pause_for_user();
-            return;
-        }
-    }
-
-    // Check if votes file exists, create sample if not
-    FILE *votes_check = fopen("data/votes.txt", "r");
-    if (!votes_check)
-    {
-        printf(YELLOW "\n⚠️  No votes file found. Would you like to create sample votes for testing? (y/n): " RESET);
-
-        char response;
-        if (scanf(" %c", &response) != 1)
-        {
-            response = 'n';
-        }
-
-        if (response == 'y' || response == 'Y')
-        {
-            if (create_sample_votes_file() == DATA_SUCCESS)
-            {
-                printf(GREEN "✅ Sample votes file created successfully!\n" RESET);
-            }
-            else
-            {
-                printf(RED "❌ Failed to create sample votes file!\n" RESET);
-                pause_for_user();
-                return;
-            }
-        }
-        else
-        {
-            printf(YELLOW "⚠️  No votes file available. Algorithm execution cancelled.\n" RESET);
-            pause_for_user();
-            return;
-        }
-    }
-    else
-    {
-        fclose(votes_check);
-        printf(GREEN "✅ Votes file found and ready for processing.\n" RESET);
-    }
-
-    // Confirm execution
-    printf(BOLD YELLOW "\n🔥 Ready to execute voting algorithm with the following parameters:\n" RESET);
-    printf("   • Minimum votes for parliament: %d\n", sys_config.min_votes_for_parliament);
-    printf("   • Maximum parliament members: %d\n", sys_config.max_parliament_members);
-    printf("\nThis will process all votes and generate the official results.\n");
-    printf(BOLD "Are you sure you want to proceed? (y/n): " RESET);
-
-    char confirm;
-    if (scanf(" %c", &confirm) != 1)
-    {
-        confirm = 'n';
-    }
-
-    if (confirm != 'y' && confirm != 'Y')
-    {
-        printf(YELLOW "⚠️  Voting algorithm execution cancelled by user.\n" RESET);
-        pause_for_user();
-        return;
-    }
-
-    // Execute the voting algorithm
-    printf(BOLD GREEN "\n🚀 Starting voting algorithm execution...\n" RESET);
-
-    int result = execute_voting_algorithm(sys_config.min_votes_for_parliament,
-                                          sys_config.max_parliament_members);
-
-    if (result == DATA_SUCCESS)
-    {
-        printf(BOLD GREEN "\n🎉 Voting algorithm completed successfully!\n" RESET);
-        printf("📄 Results have been saved to 'data/voting_results.txt'\n");
-        printf("📊 Parliament members have been selected according to the configured parameters.\n");
-    }
-    else
-    {
-        printf(BOLD RED "\n❌ Voting algorithm failed with error code: %d\n" RESET, result);
-        printf("🔧 Please check the system configuration and data files.\n");
-    }
-
-    pause_for_user();
 }
