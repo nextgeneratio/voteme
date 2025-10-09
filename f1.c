@@ -16,7 +16,7 @@ int main() {
     int isUnique;
 
     printf(YELLOW "=====================================\n");
-    printf("     CANDIDATE REGISTRATION SYSTEM   \n");
+    printf("     CANDIDATE REGISTRATION SYSTEM.   \n");
     printf("=====================================\n" RESET);
 
     // Count existing candidates to assign next ID
