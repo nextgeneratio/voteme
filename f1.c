@@ -1,90 +1,94 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-
-// ANSI color codes
-#define RESET   "\033[0m"
-#define RED     "\033[31m"
-#define GREEN   "\033[32m"
-#define YELLOW  "\033[33m"
 
 int main() {
     FILE *fp;
-    char name[50], nic[15], party[50], address[100];
-    float netWorth, regFee;
-    int candidateID = 0;
-    char ch;
-    int isUnique;
+    char name[50], nic[20], address[100];
+    int age;
+    int voterID = 0;
+    char ch, temp[20];
+    char line[200];
+    int nicExists = 0; // flag for duplicate check
 
-    printf(YELLOW "=====================================\n");
-    printf("     CANDIDATE REGISTRATION SYSTEM.   \n");
-    printf("=====================================\n" RESET);
+    system("color 0A"); // green text on black background
 
-    // Count existing candidates to assign next ID
-    fp = fopen("candidates.txt", "r");
+    printf("\033[1;36m====================================\n");
+    printf("       VOTER REGISTRATION SYSTEM     \n");
+    printf("====================================\033[0m\n");
+
+    // Count existing voters
+    fp = fopen("voters.txt", "r");
     if (fp != NULL) {
         while ((ch = fgetc(fp)) != EOF) {
             if (ch == '\n')
-                candidateID++;
+                voterID++;
         }
         fclose(fp);
     }
-    candidateID++; // next candidate ID
+    voterID++;
 
-    // Input candidate details
-    printf(YELLOW "\nEnter Full Name: " RESET);
-    fgets(name, sizeof(name), stdin);
-    name[strcspn(name, "\n")] = 0; // remove newline
+    // --- Get inputs ---
+    printf("\033[1;33m\nEnter Full Name: \033[0m");
+    scanf(" %[^\n]", name);
 
-    // NIC input with uniqueness check
-    do {
-        isUnique = 1;
-        printf(YELLOW "Enter NIC: " RESET);
-        fgets(nic, sizeof(nic), stdin);
-        nic[strcspn(nic, "\n")] = 0; // remove newline
+    printf("\033[1;33mEnter NIC: \033[0m");
+    scanf(" %[^\n]", nic);
 
-        // Check if NIC already exists
-        fp = fopen("candidates.txt", "r");
-        if (fp != NULL) {
-            char line[300], existingNIC[15];
-            while (fgets(line, sizeof(line), fp) != NULL) {
-                sscanf(line, "%*d,%*[^,],%[^,],%*[^,],%*f,%*[^,],%*f", existingNIC);
-                if (strcmp(nic, existingNIC) == 0) {
-                    printf(RED "❌ NIC already registered. Enter a unique NIC.\n" RESET);
-                    isUnique = 0;
-                    break;
-                }
+    // --- Check NIC already exists ---
+    fp = fopen("voters.txt", "r");
+    if (fp != NULL) {
+        while (fgets(line, sizeof(line), fp)) {
+            if (strstr(line, nic)) {  // check if NIC is found in any line
+                nicExists = 1;
+                break;
             }
-            fclose(fp);
         }
-    } while (!isUnique);
+        fclose(fp);
+    }
 
-    printf(YELLOW "Enter Party Name: " RESET);
-    fgets(party, sizeof(party), stdin);
-    party[strcspn(party, "\n")] = 0;
+    if (nicExists == 1) {
+        printf("\n\033[1;31m⚠️  Error: This NIC is already registered!\033[0m\n");
+        printf("Registration cancelled.\n");
+        return 0; // stop program
+    }
 
-    printf(YELLOW "Enter Net Worth (LKR): " RESET);
-    scanf("%f", &netWorth);
-    getchar(); // consume newline
+    // --- Continue registration ---
+    printf("\033[1;33mEnter Age: \033[0m");
+    scanf("%d", &age);
 
-    printf(YELLOW "Enter Permanent Address: " RESET);
-    fgets(address, sizeof(address), stdin);
-    address[strcspn(address, "\n")] = 0;
+    printf("\033[1;33mEnter Permanent Address: \033[0m");
+    scanf(" %[^\n]", address);
 
-    printf(YELLOW "Enter Registration Fee (LKR): " RESET);
-    scanf("%f", &regFee);
-
-    // Save candidate to file
-    fp = fopen("candidates.txt", "a");
+    fp = fopen("voters.txt", "a");
     if (fp == NULL) {
-        printf(RED "Error opening file!\n" RESET);
+        printf("\033[1;31mFile cannot be opened!\033[0m\n");
         return 0;
     }
 
-    fprintf(fp, "%d,%s,%s,%s,%.2f,%s,%.2f\n", candidateID, name, nic, party, netWorth, address, regFee);
+    // --- Write new voter to file ---
+    fputs("Voter ID: ", fp);
+    snprintf(temp, sizeof(temp), "%d", voterID);
+    fputs(temp, fp);
+
+    fputs("\nName: ", fp);
+    fputs(name, fp);
+
+    fputs("\nNIC: ", fp);
+    fputs(nic, fp);
+
+    fputs("\nAge: ", fp);
+    snprintf(temp, sizeof(temp), "%d", age);
+    fputs(temp, fp);
+
+    fputs("\nAddress: ", fp);
+    fputs(address, fp);
+    fputs("\n------------------------\n", fp);
+
     fclose(fp);
 
-    printf(GREEN "\n✅ Candidate Registered Successfully!\n" RESET);
-    printf(GREEN "Assigned Candidate ID: %d\n" RESET, candidateID);
+    printf("\n\033[1;32m✅ Voter Registered Successfully!\033[0m\n");
+    printf("Assigned Voter ID: %d\n", voterID);
 
     return 0;
 }
