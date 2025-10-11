@@ -1,12 +1,12 @@
 # VoteMe Voting Results Report
-# Generated on: 2025-10-07 at 19:51:16
+# Generated on: 2025-10-11 at 23:33:40
 
 [STATISTICS]
-total_candidates=3
-total_votes_cast=3
+total_candidates=4
+total_votes_cast=5
 qualified_candidates=0
 parliament_members_selected=0
-min_votes_threshold=10
+min_votes_threshold=100
 max_parliament_seats=225
 
 [PARLIAMENT_MEMBERS]
@@ -14,6 +14,7 @@ candidate_number,name,party_id,district_id,votes,rank
 
 [ALL_RESULTS]
 candidate_number,name,party_id,district_id,votes,rank,qualified_for_parliament
-C001,Alice Brown,P01,D01,2,1,NO
-C002,Charlie Davis,P02,D01,1,2,NO
-C003,Diana Wilson,P01,D02,0,3,NO
+C001,Michael Lee,P001,D01,2,1,NO
+C002,Sarah Davis,P002,D01,2,2,NO
+C003,David Miller,P001,D02,1,3,NO
+C004,Emma Wilson,P003,D02,0,4,NO
