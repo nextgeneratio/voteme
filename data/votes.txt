@@ -1,4 +1,2 @@
 voter_id,candidate_id
-V001,C001
-V002,C001
-V003,C002
+
