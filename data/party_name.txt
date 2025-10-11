@@ -1,0 +1,21 @@
+party_id,party_name
+P01,Progressive Party  
+P02,Conservative Party  
+P03,Liberal Party  
+P04,National Unity Party  
+P05,Democratic Alliance  
+P06,Social Justice Party  
+P07,People's Freedom Front  
+P08,Green Future Party  
+P09,Labour Union Party  
+P10,Patriotic Movement  
+P11,United Reform Party  
+P12,Civic Action Party  
+P13,National Heritage Party  
+P14,Equality Party  
+P15,Independent Voice Party  
+P16,Social Democratic Party  
+P17,Future Vision Party  
+P18,Republican Front  
+P19,Alliance for Progress  
+P20,New Dawn Party  
