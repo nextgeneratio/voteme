@@ -1,4 +1,26 @@
 district_id,district_name
-D01,Central District
-D02,Northern District
-D03,Southern District
+D01,Colombo District  
+D02,Gampaha District  
+D03,Kalutara District  
+D04,Kandy District  
+D05,Matale District  
+D06,Nuwara Eliya District  
+D07,Galle District  
+D08,Matara District  
+D09,Hambantota District  
+D10,Jaffna District  
+D11,Kilinochchi District  
+D12,Mannar District  
+D13,Vavuniya District  
+D14,Mullaitivu District  
+D15,Batticaloa District  
+D16,Ampara District  
+D17,Trincomalee District  
+D18,Kurunegala District  
+D19,Puttalam District  
+D20,Anuradhapura District  
+D21,Polonnaruwa District  
+D22,Badulla District  
+D23,Monaragala District  
+D24,Ratnapura District  
+D25,Kegalle District  
