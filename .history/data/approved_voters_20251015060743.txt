@@ -2,7 +2,6 @@ voting_number,name,nic,district_id
 V001,John Doe,123456789V,D01
 V002,Jane Smith,987654321V,D01
 V003,Bob Johnson,456789123V,D02
-V004,Alice Brown,789123456V,D02
+V004,Alice Brown,cle,D02
 V005,Charlie Wilson,321654987V,D01
 V006, Mary Jerry, 789123467V, D01
-V100, Test Voter, NIC100, D01

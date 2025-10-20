@@ -1,5 +1,3 @@
 candidate_number,name,party_id,district_id,nic
-C001,Michael Lee,P001,D01,111222333V
-C002,Sarah Davis,P002,D01,444555666V
-C003,David Miller,P001,D02,777888999V
-C004,Emma Wilson,P003,D02,000111222V
+C001,Alice,P001,D01,111V
+C002,Bob,P002,D01,222V

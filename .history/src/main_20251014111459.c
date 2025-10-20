@@ -72,8 +72,8 @@ void create_sample_data(void);
 int count_records_in_file(const char *filename);
 
 // Helper function declarations for enhanced registration
-char *generate_next_voter_id(void);
-char *generate_next_candidate_id(void);
+char* generate_next_voter_id(void);
+char* generate_next_candidate_id(void);
 int check_nic_exists_voters(const char *nic);
 int check_nic_exists_candidates(const char *nic);
 void display_districts(void);
@@ -915,21 +915,20 @@ void pause_for_user(void)
 
 // Helper function implementations
 
-char *generate_next_voter_id(void)
+char* generate_next_voter_id(void)
 {
 	FILE *file = fopen("data/approved_voters.txt", "r");
 	if (!file)
 	{
 		// If file doesn't exist, start with V001
 		char *id = malloc(5);
-		if (id)
-			strcpy(id, "V001");
+		if (id) strcpy(id, "V001");
 		return id;
 	}
 
 	int max_num = 0;
 	char line[256];
-
+	
 	// Skip header line
 	if (fgets(line, sizeof(line), file))
 	{
@@ -942,15 +941,14 @@ char *generate_next_voter_id(void)
 				if (voting_number[0] == 'V' || voting_number[0] == 'v')
 				{
 					int num = atoi(&voting_number[1]);
-					if (num > max_num)
-						max_num = num;
+					if (num > max_num) max_num = num;
 				}
 			}
 		}
 	}
-
+	
 	fclose(file);
-
+	
 	char *new_id = malloc(5);
 	if (new_id)
 	{
@@ -959,21 +957,20 @@ char *generate_next_voter_id(void)
 	return new_id;
 }
 
-char *generate_next_candidate_id(void)
+char* generate_next_candidate_id(void)
 {
 	FILE *file = fopen("data/approved_candidates.txt", "r");
 	if (!file)
 	{
 		// If file doesn't exist, start with C001
 		char *id = malloc(5);
-		if (id)
-			strcpy(id, "C001");
+		if (id) strcpy(id, "C001");
 		return id;
 	}
 
 	int max_num = 0;
 	char line[256];
-
+	
 	// Skip header line
 	if (fgets(line, sizeof(line), file))
 	{
@@ -986,15 +983,14 @@ char *generate_next_candidate_id(void)
 				if (candidate_number[0] == 'C' || candidate_number[0] == 'c')
 				{
 					int num = atoi(&candidate_number[1]);
-					if (num > max_num)
-						max_num = num;
+					if (num > max_num) max_num = num;
 				}
 			}
 		}
 	}
-
+	
 	fclose(file);
-
+	
 	char *new_id = malloc(5);
 	if (new_id)
 	{
@@ -1006,8 +1002,7 @@ char *generate_next_candidate_id(void)
 int check_nic_exists_voters(const char *nic)
 {
 	FILE *file = fopen("data/approved_voters.txt", "r");
-	if (!file)
-		return 0;
+	if (!file) return 0;
 
 	char line[256];
 	// Skip header line
@@ -1016,7 +1011,7 @@ int check_nic_exists_voters(const char *nic)
 		while (fgets(line, sizeof(line), file))
 		{
 			char voting_number[20], name[100], file_nic[20], district_id[20];
-			if (sscanf(line, "%19[^,],%99[^,],%19[^,],%19s",
+			if (sscanf(line, "%19[^,],%99[^,],%19[^,],%19s", 
 					   voting_number, name, file_nic, district_id) == 4)
 			{
 				if (strcmp(file_nic, nic) == 0)
@@ -1027,7 +1022,7 @@ int check_nic_exists_voters(const char *nic)
 			}
 		}
 	}
-
+	
 	fclose(file);
 	return 0; // NIC doesn't exist
 }
@@ -1035,8 +1030,7 @@ int check_nic_exists_voters(const char *nic)
 int check_nic_exists_candidates(const char *nic)
 {
 	FILE *file = fopen("data/approved_candidates.txt", "r");
-	if (!file)
-		return 0;
+	if (!file) return 0;
 
 	char line[256];
 	// Skip header line
@@ -1045,7 +1039,7 @@ int check_nic_exists_candidates(const char *nic)
 		while (fgets(line, sizeof(line), file))
 		{
 			char candidate_number[20], name[100], party_id[20], district_id[20], file_nic[20];
-			if (sscanf(line, "%19[^,],%99[^,],%19[^,],%19[^,],%19s",
+			if (sscanf(line, "%19[^,],%99[^,],%19[^,],%19[^,],%19s", 
 					   candidate_number, name, party_id, district_id, file_nic) == 5)
 			{
 				if (strcmp(file_nic, nic) == 0)
@@ -1056,7 +1050,7 @@ int check_nic_exists_candidates(const char *nic)
 			}
 		}
 	}
-
+	
 	fclose(file);
 	return 0; // NIC doesn't exist
 }
@@ -1073,7 +1067,7 @@ void display_districts(void)
 	char line[256];
 	printf(BOLD "District ID  | District Name\n" RESET);
 	printf("─────────────┼──────────────────────────────────────\n");
-
+	
 	// Skip header line
 	if (fgets(line, sizeof(line), file))
 	{
@@ -1086,15 +1080,14 @@ void display_districts(void)
 			}
 		}
 	}
-
+	
 	fclose(file);
 }
 
 int validate_district_id(const char *district_id)
 {
 	FILE *file = fopen("data/district.txt", "r");
-	if (!file)
-		return 0;
+	if (!file) return 0;
 
 	char line[256];
 	// Skip header line
@@ -1113,7 +1106,7 @@ int validate_district_id(const char *district_id)
 			}
 		}
 	}
-
+	
 	fclose(file);
 	return 0; // District ID not found
 }
@@ -1130,7 +1123,7 @@ void display_parties(void)
 	char line[256];
 	printf(BOLD "Party ID | Party Name\n" RESET);
 	printf("─────────┼──────────────────────────────────────\n");
-
+	
 	// Skip header line
 	if (fgets(line, sizeof(line), file))
 	{
@@ -1143,15 +1136,14 @@ void display_parties(void)
 			}
 		}
 	}
-
+	
 	fclose(file);
 }
 
 int validate_party_id(const char *party_id)
 {
 	FILE *file = fopen("data/party_name.txt", "r");
-	if (!file)
-		return 0;
+	if (!file) return 0;
 
 	char line[256];
 	// Skip header line
@@ -1170,7 +1162,7 @@ int validate_party_id(const char *party_id)
 			}
 		}
 	}
-
+	
 	fclose(file);
 	return 0; // Party ID not found
 }

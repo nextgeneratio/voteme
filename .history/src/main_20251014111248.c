@@ -72,8 +72,8 @@ void create_sample_data(void);
 int count_records_in_file(const char *filename);
 
 // Helper function declarations for enhanced registration
-char *generate_next_voter_id(void);
-char *generate_next_candidate_id(void);
+char* generate_next_voter_id(void);
+char* generate_next_candidate_id(void);
 int check_nic_exists_voters(const char *nic);
 int check_nic_exists_candidates(const char *nic);
 void display_districts(void);
@@ -347,115 +347,53 @@ void handle_candidate_management(void)
 			printf(BRIGHT_CYAN "\n➕ Adding New Candidate\n" RESET);
 			printf("═══════════════════════════════════════════════════════════════════════════════\n");
 
-			char nic[20], party_id[20], name[100], district_id[20];
-			char *candidate_number;
+			char candidate_number[20], nic[20], party_id[20], name[100], district_id[20];
 
-			// Auto-generate candidate ID
-			candidate_number = generate_next_candidate_id();
-			if (!candidate_number)
+			printf("Enter Candidate Number: ");
+			if (scanf("%19s", candidate_number) != 1)
 			{
-				printf(RED "❌ Failed to generate candidate ID!\n" RESET);
+				printf(RED "❌ Invalid input!\n" RESET);
 				break;
 			}
 
-			printf(BRIGHT_GREEN "📋 Auto-generated Candidate ID: %s\n" RESET, candidate_number);
-			printf("─────────────────────────────────────────────────────────────────────────────\n");
-
-			// Get full name
 			printf("Enter Full Name: ");
 			getchar(); // consume newline
 			if (fgets(name, sizeof(name), stdin) == NULL)
 			{
 				printf(RED "❌ Invalid input!\n" RESET);
-				free(candidate_number);
 				break;
 			}
 			name[strcspn(name, "\n")] = 0; // remove newline
 
-			// Display parties and get selection
-			printf("\n🎯 Available Political Parties:\n");
-			printf("─────────────────────────────────────────────────────────────────────────────\n");
-			display_parties();
-			printf("─────────────────────────────────────────────────────────────────────────────\n");
-
-			while (1)
+			printf("Enter Party ID: ");
+			if (scanf("%19s", party_id) != 1)
 			{
-				printf("Enter Party ID: ");
-				if (scanf("%19s", party_id) != 1)
-				{
-					printf(RED "❌ Invalid input!\n" RESET);
-					continue;
-				}
-
-				if (!validate_party_id(party_id))
-				{
-					printf(RED "❌ Error: Party ID '%s' is not available!\n" RESET, party_id);
-					printf(YELLOW "Please choose from the available parties above.\n" RESET);
-					continue;
-				}
+				printf(RED "❌ Invalid input!\n" RESET);
 				break;
 			}
 
-			// Display districts and get selection
-			printf("\n🗺️  Available Districts:\n");
-			printf("─────────────────────────────────────────────────────────────────────────────\n");
-			display_districts();
-			printf("─────────────────────────────────────────────────────────────────────────────\n");
-
-			while (1)
+			printf("Enter District ID: ");
+			if (scanf("%19s", district_id) != 1)
 			{
-				printf("Enter District ID: ");
-				if (scanf("%19s", district_id) != 1)
-				{
-					printf(RED "❌ Invalid input!\n" RESET);
-					continue;
-				}
-
-				if (!validate_district_id(district_id))
-				{
-					printf(RED "❌ Error: District ID '%s' is not available!\n" RESET, district_id);
-					printf(YELLOW "Please choose from the available districts above.\n" RESET);
-					continue;
-				}
+				printf(RED "❌ Invalid input!\n" RESET);
 				break;
 			}
 
-			// Get NIC with validation
-			while (1)
+			printf("Enter NIC: ");
+			if (scanf("%19s", nic) != 1)
 			{
-				printf("Enter NIC: ");
-				if (scanf("%19s", nic) != 1)
-				{
-					printf(RED "❌ Invalid input!\n" RESET);
-					continue;
-				}
-
-				// Check for duplicate NIC
-				if (check_nic_exists_voters(nic) || check_nic_exists_candidates(nic))
-				{
-					printf(RED "❌ Error: This NIC is already registered!\n" RESET);
-					printf(YELLOW "Please enter a different NIC: " RESET);
-					continue;
-				}
+				printf(RED "❌ Invalid input!\n" RESET);
 				break;
 			}
 
-			// Create candidate with enhanced data handler
 			if (create_candidate(candidate_number, name, party_id, district_id, nic) == DATA_SUCCESS)
 			{
-				printf(BRIGHT_GREEN "\n✅ Candidate registered successfully!\n" RESET);
-				printf("📋 Candidate ID: " CYAN "%s" RESET "\n", candidate_number);
-				printf("👤 Name: " CYAN "%s" RESET "\n", name);
-				printf("🎯 Party: " CYAN "%s" RESET "\n", party_id);
-				printf("🗺️  District: " CYAN "%s" RESET "\n", district_id);
-				printf("🆔 NIC: " CYAN "%s" RESET "\n", nic);
+				printf(BRIGHT_GREEN "✅ Candidate added successfully!\n" RESET);
 			}
 			else
 			{
-				printf(RED "❌ Failed to register candidate!\n" RESET);
+				printf(RED "❌ Failed to add candidate!\n" RESET);
 			}
-
-			free(candidate_number);
 			pause_for_user();
 			break;
 		}
@@ -911,266 +849,4 @@ void pause_for_user(void)
 {
 	printf("\n" CYAN "Press Enter to continue..." RESET);
 	getchar();
-}
-
-// Helper function implementations
-
-char *generate_next_voter_id(void)
-{
-	FILE *file = fopen("data/approved_voters.txt", "r");
-	if (!file)
-	{
-		// If file doesn't exist, start with V001
-		char *id = malloc(5);
-		if (id)
-			strcpy(id, "V001");
-		return id;
-	}
-
-	int max_num = 0;
-	char line[256];
-
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char voting_number[20];
-			if (sscanf(line, "%19[^,]", voting_number) == 1)
-			{
-				// Extract number from V### format
-				if (voting_number[0] == 'V' || voting_number[0] == 'v')
-				{
-					int num = atoi(&voting_number[1]);
-					if (num > max_num)
-						max_num = num;
-				}
-			}
-		}
-	}
-
-	fclose(file);
-
-	char *new_id = malloc(5);
-	if (new_id)
-	{
-		snprintf(new_id, 5, "V%03d", max_num + 1);
-	}
-	return new_id;
-}
-
-char *generate_next_candidate_id(void)
-{
-	FILE *file = fopen("data/approved_candidates.txt", "r");
-	if (!file)
-	{
-		// If file doesn't exist, start with C001
-		char *id = malloc(5);
-		if (id)
-			strcpy(id, "C001");
-		return id;
-	}
-
-	int max_num = 0;
-	char line[256];
-
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char candidate_number[20];
-			if (sscanf(line, "%19[^,]", candidate_number) == 1)
-			{
-				// Extract number from C### format
-				if (candidate_number[0] == 'C' || candidate_number[0] == 'c')
-				{
-					int num = atoi(&candidate_number[1]);
-					if (num > max_num)
-						max_num = num;
-				}
-			}
-		}
-	}
-
-	fclose(file);
-
-	char *new_id = malloc(5);
-	if (new_id)
-	{
-		snprintf(new_id, 5, "C%03d", max_num + 1);
-	}
-	return new_id;
-}
-
-int check_nic_exists_voters(const char *nic)
-{
-	FILE *file = fopen("data/approved_voters.txt", "r");
-	if (!file)
-		return 0;
-
-	char line[256];
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char voting_number[20], name[100], file_nic[20], district_id[20];
-			if (sscanf(line, "%19[^,],%99[^,],%19[^,],%19s",
-					   voting_number, name, file_nic, district_id) == 4)
-			{
-				if (strcmp(file_nic, nic) == 0)
-				{
-					fclose(file);
-					return 1; // NIC exists
-				}
-			}
-		}
-	}
-
-	fclose(file);
-	return 0; // NIC doesn't exist
-}
-
-int check_nic_exists_candidates(const char *nic)
-{
-	FILE *file = fopen("data/approved_candidates.txt", "r");
-	if (!file)
-		return 0;
-
-	char line[256];
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char candidate_number[20], name[100], party_id[20], district_id[20], file_nic[20];
-			if (sscanf(line, "%19[^,],%99[^,],%19[^,],%19[^,],%19s",
-					   candidate_number, name, party_id, district_id, file_nic) == 5)
-			{
-				if (strcmp(file_nic, nic) == 0)
-				{
-					fclose(file);
-					return 1; // NIC exists
-				}
-			}
-		}
-	}
-
-	fclose(file);
-	return 0; // NIC doesn't exist
-}
-
-void display_districts(void)
-{
-	FILE *file = fopen("data/district.txt", "r");
-	if (!file)
-	{
-		printf(RED "❌ Error: District file not found!\n" RESET);
-		return;
-	}
-
-	char line[256];
-	printf(BOLD "District ID  | District Name\n" RESET);
-	printf("─────────────┼──────────────────────────────────────\n");
-
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char district_id[20], district_name[100];
-			if (sscanf(line, "%19[^,],%99[^\n]", district_id, district_name) == 2)
-			{
-				printf("%-12s │ %s\n", district_id, district_name);
-			}
-		}
-	}
-
-	fclose(file);
-}
-
-int validate_district_id(const char *district_id)
-{
-	FILE *file = fopen("data/district.txt", "r");
-	if (!file)
-		return 0;
-
-	char line[256];
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char file_district_id[20];
-			if (sscanf(line, "%19[^,]", file_district_id) == 1)
-			{
-				if (strcmp(file_district_id, district_id) == 0)
-				{
-					fclose(file);
-					return 1; // District ID is valid
-				}
-			}
-		}
-	}
-
-	fclose(file);
-	return 0; // District ID not found
-}
-
-void display_parties(void)
-{
-	FILE *file = fopen("data/party_name.txt", "r");
-	if (!file)
-	{
-		printf(RED "❌ Error: Party file not found!\n" RESET);
-		return;
-	}
-
-	char line[256];
-	printf(BOLD "Party ID | Party Name\n" RESET);
-	printf("─────────┼──────────────────────────────────────\n");
-
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char party_id[20], party_name[100];
-			if (sscanf(line, "%19[^,],%99[^\n]", party_id, party_name) == 2)
-			{
-				printf("%-8s │ %s\n", party_id, party_name);
-			}
-		}
-	}
-
-	fclose(file);
-}
-
-int validate_party_id(const char *party_id)
-{
-	FILE *file = fopen("data/party_name.txt", "r");
-	if (!file)
-		return 0;
-
-	char line[256];
-	// Skip header line
-	if (fgets(line, sizeof(line), file))
-	{
-		while (fgets(line, sizeof(line), file))
-		{
-			char file_party_id[20];
-			if (sscanf(line, "%19[^,]", file_party_id) == 1)
-			{
-				if (strcmp(file_party_id, party_id) == 0)
-				{
-					fclose(file);
-					return 1; // Party ID is valid
-				}
-			}
-		}
-	}
-
-	fclose(file);
-	return 0; // Party ID not found
 }
