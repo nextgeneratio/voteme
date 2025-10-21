@@ -14,7 +14,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "data_handler_enhanced.h"
+#include "data_handle.h"
+#include "ui_utils.h"
 #include "voting.h"
 #include "voting.h"
 
@@ -79,6 +80,7 @@ void handle_data_viewing(void);
 void handle_voting_algorithm(void);
 void handle_voting_algorithm(void);
 void handle_system_limits(void);
+// moved to ui_utils.c
 void display_banner(void);
 void pause_for_user(void);
 void clear_screen(void);
@@ -124,9 +126,11 @@ void delete_party_interactive(void);
 void delete_district_interactive(void);
 
 // Utility functions
+// moved to ui_utils.c
 void get_user_input(const char *prompt, char *buffer, size_t size);
 int get_user_choice(const char *prompt, int min, int max);
 int validate_system_limits(void);
+// moved to ui_utils.c
 void display_error(const char *message);
 void display_success(const char *message);
 void display_info(const char *message);
@@ -189,18 +193,7 @@ int main(void)
     return 0;
 }
 
-void display_banner(void)
-{
-    printf(BOLD BLUE);
-    printf("╔══════════════════════════════════════════════════════════════╗\n");
-    printf("║                    " WHITE "VoteMe Admin System" BLUE "                     ║\n");
-    printf("║                  " WHITE "Enhanced Management Console" BLUE "               ║\n");
-    printf("║══════════════════════════════════════════════════════════════║\n");
-    printf("║  " GREEN "✓ Complete CRUD Operations" BLUE "   ║  " GREEN "✓ Data Viewing & Browsing" BLUE "  ║\n");
-    printf("║  " GREEN "✓ System Limit Management" BLUE "    ║  " GREEN "✓ Real-time Validation" BLUE "    ║\n");
-    printf("╚══════════════════════════════════════════════════════════════╝\n");
-    printf(RESET "\n");
-}
+// display_banner moved to ui_utils.c
 
 void display_main_menu(void)
 {
@@ -1490,44 +1483,9 @@ void delete_district_interactive(void)
 // Utility Functions
 // =====================================================
 
-void get_user_input(const char *prompt, char *buffer, size_t size)
-{
-    printf(CYAN "%s: " RESET, prompt);
-    fflush(stdout);
+// get_user_input moved to ui_utils.c
 
-    if (fgets(buffer, size, stdin) != NULL)
-    {
-        // Remove trailing newline
-        size_t len = strlen(buffer);
-        if (len > 0 && buffer[len - 1] == '\n')
-        {
-            buffer[len - 1] = '\0';
-        }
-    }
-}
-
-int get_user_choice(const char *prompt, int min, int max)
-{
-    int choice;
-    char input[100];
-
-    do
-    {
-        printf(CYAN "%s (%d-%d): " RESET, prompt, min, max);
-        fflush(stdout);
-
-        if (fgets(input, sizeof(input), stdin) != NULL)
-        {
-            choice = atoi(input);
-            if (choice >= min && choice <= max)
-            {
-                return choice;
-            }
-        }
-
-        display_error("Invalid input! Please try again.");
-    } while (1);
-}
+// get_user_choice moved to ui_utils.c
 
 int validate_system_limits(void)
 {
@@ -1548,61 +1506,13 @@ int validate_system_limits(void)
     return 1;
 }
 
-void display_error(const char *message)
-{
-    printf(RED "❌ Error: %s\n" RESET, message);
-}
+// display_error/success/info moved to ui_utils.c
 
-void display_success(const char *message)
-{
-    printf(GREEN "✅ Success: %s\n" RESET, message);
-}
+// count_records_in_file moved to ui_utils.c
 
-void display_info(const char *message)
-{
-    printf(BLUE "ℹ️  Info: %s\n" RESET, message);
-}
+// pause_for_user moved to ui_utils.c
 
-int count_records_in_file(const char *filename)
-{
-    FILE *fp = fopen(filename, "r");
-    if (!fp)
-        return -1;
-
-    int count = 0;
-    char line[MAX_LINE_LENGTH];
-
-    // Skip header if it exists
-    if (fgets(line, sizeof(line), fp))
-    {
-        while (fgets(line, sizeof(line), fp))
-        {
-            count++;
-        }
-    }
-
-    fclose(fp);
-    return count;
-}
-
-void pause_for_user(void)
-{
-    printf("\n" CYAN "Press Enter to continue..." RESET);
-    getchar();
-}
-
-void clear_screen(void)
-{
-#ifdef _WIN32
-    if (system("cls") != 0)
-    { /* Ignore */
-    }
-#else
-    if (system("clear") != 0)
-    { /* Ignore */
-    }
-#endif
-}
+// clear_screen moved to ui_utils.c
 
 // =====================================================
 // Voting Algorithm Handler

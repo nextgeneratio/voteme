@@ -10,7 +10,7 @@ BINDIR = bin
 DATADIR = data
 
 # Source files (kept minimal)
-ADMIN_SOURCES = $(SRCDIR)/admin.c $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/voting.c
+ADMIN_SOURCES = $(SRCDIR)/admin.c $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/voting.c $(SRCDIR)/ui_utils.c
 
 # Object files
 ADMIN_OBJECTS = $(ADMIN_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

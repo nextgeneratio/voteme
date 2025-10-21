@@ -1,6 +1,7 @@
 # VoteMe (Minimal)
 
 This repository contains a simplified core of the VoteMe system, keeping only:
+
 - Enhanced data handling (CSV-backed CRUD)
 - Admin console (data admin UI/logic)
 - Voting algorithm (process votes and write results)
@@ -28,6 +29,7 @@ Use the admin menu to manage data and run the voting algorithm. Data is stored u
 ## Tests
 
 Two small tests are provided:
+
 - Voting algorithm basic scenario
 - Data handler smoke test
 
