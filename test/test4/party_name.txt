@@ -1,2 +1,0 @@
-party_id,party_name
-001,Bell
