@@ -1,2 +1,0 @@
-ID: 12, Name: Amjad
-ID: 13, Name: Kalhara

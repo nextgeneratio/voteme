@@ -1,2 +1,0 @@
-candidate_number,party_id
-0001, 001
