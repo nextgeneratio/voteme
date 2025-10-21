@@ -1,3 +1,4 @@
 candidate_number,name,party_id,district_id,nic
 C001,Alice,P001,D01,111V
 C002,Bob,P002,D01,222V
+C777, Codec Candidate, P777, D07, NIC777
