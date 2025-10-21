@@ -272,17 +272,13 @@ int overwrite_file(const char *filename, const char *content)
 
 static void trim_ws(char *s)
 {
-    if (!s)
-        return;
+    if (!s) return;
     char *start = s;
-    while (*start && (*start == ' ' || *start == '\t' || *start == '\r' || *start == '\n'))
-        start++;
+    while (*start && (*start == ' ' || *start == '\t' || *start == '\r' || *start == '\n')) start++;
     char *end = s + strlen(s);
-    while (end > start && (end[-1] == ' ' || end[-1] == '\t' || end[-1] == '\r' || end[-1] == '\n'))
-        end--;
+    while (end > start && (end[-1] == ' ' || end[-1] == '\t' || end[-1] == '\r' || end[-1] == '\n')) end--;
     size_t len = (size_t)(end - start);
-    if (start != s)
-        memmove(s, start, len);
+    if (start != s) memmove(s, start, len);
     s[len] = '\0';
 }
 
@@ -303,7 +299,7 @@ int split_csv_fields(const char *line, char *fields[], int max_fields, char deli
     memcpy(copy, line, L + 1);
 
     int count = 0;
-    char delim_str[2] = {delimiter, '\0'};
+    char delim_str[2] = { delimiter, '\0' };
     char *token = strtok(copy, delim_str);
     while (token && count < max_fields)
     {
@@ -312,8 +308,7 @@ int split_csv_fields(const char *line, char *fields[], int max_fields, char deli
         char *dup = malloc(tlen + 1);
         if (!dup)
         {
-            for (int i = 0; i < count; i++)
-                free(fields[i]);
+            for (int i = 0; i < count; i++) free(fields[i]);
             free(copy);
             set_error_message("Error: Memory allocation failed in split_csv_fields copy");
             return 0;

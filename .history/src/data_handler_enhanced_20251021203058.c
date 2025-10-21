@@ -234,19 +234,16 @@ char *read_record(const char *filename, char *primary_keys[], int num_keys)
                 set_error_message("Error: Memory allocation failed for record duplication");
                 fclose(fp);
                 // free allocated fields
-                for (int f = 0; f < field_count; f++)
-                    free(fields[f]);
+                for (int f = 0; f < field_count; f++) free(fields[f]);
                 return NULL;
             }
             result = dup;
             // free allocated fields before break
-            for (int f = 0; f < field_count; f++)
-                free(fields[f]);
+            for (int f = 0; f < field_count; f++) free(fields[f]);
             break;
         }
         // free allocated fields for this line
-        for (int f = 0; f < field_count; f++)
-            free(fields[f]);
+        for (int f = 0; f < field_count; f++) free(fields[f]);
     }
 
     fclose(fp);
@@ -297,7 +294,6 @@ int update_record(const char *filename, char *primary_keys[], int num_keys, cons
         return DATA_ERROR_MEMORY_ALLOCATION;
     }
     content[0] = '\0';
-    size_t content_len = 0;
 
     char line[MAX_LINE_LENGTH];
     int record_updated = 0;
@@ -312,12 +308,14 @@ int update_record(const char *filename, char *primary_keys[], int num_keys, cons
         return DATA_ERROR_MALFORMED_DATA;
     }
 
-    if (!append_to_buffer(content, &content_len, line))
+    if (strlen(content) + strlen(line) >= MAX_FILE_SIZE)
     {
+        set_error_message("Error: File size would exceed maximum limit");
         free(content);
         fclose(fp);
         return DATA_ERROR_BUFFER_OVERFLOW;
     }
+    strcat(content, line);
     line_number++;
 
     // Parse field_to_update
@@ -349,23 +347,35 @@ int update_record(const char *filename, char *primary_keys[], int num_keys, cons
     {
         line_number++;
 
+        if (strlen(content) + strlen(line) >= MAX_FILE_SIZE)
+        {
+            set_error_message("Error: File size would exceed maximum limit at line %d", line_number);
+            free(content);
+            fclose(fp);
+            return DATA_ERROR_BUFFER_OVERFLOW;
+        }
+
         char line_copy[MAX_LINE_LENGTH];
         strncpy(line_copy, line, sizeof(line_copy) - 1);
         line_copy[sizeof(line_copy) - 1] = '\0';
 
-        // Parse fields using shared helper
+        // Parse fields
         char *fields[MAX_FIELDS];
-        int field_count = split_csv_fields(line, fields, MAX_FIELDS, ',');
-        if (field_count <= 0)
+        char *token = strtok(line, ",");
+        int field_count = 0;
+        while (token && field_count < MAX_FIELDS)
         {
-            // keep original line if cannot parse
-            if (!append_to_buffer(content, &content_len, line_copy))
+            // Trim whitespace
+            while (*token == ' ' || *token == '\t')
+                token++;
+            char *end = token + strlen(token) - 1;
+            while (end > token && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r'))
             {
-                free(content);
-                fclose(fp);
-                return DATA_ERROR_BUFFER_OVERFLOW;
+                *end-- = '\0';
             }
-            continue;
+
+            fields[field_count++] = token;
+            token = strtok(NULL, ",");
         }
 
         // Check if this matches our primary keys
@@ -400,7 +410,6 @@ int update_record(const char *filename, char *primary_keys[], int num_keys, cons
                 set_error_message("Error: Update field index %d out of range (0-%d)", update_index, field_count - 1);
                 free(content);
                 fclose(fp);
-                for (int f = 0; f < field_count; f++) free(fields[f]);
                 return DATA_ERROR_INVALID_INPUT;
             }
 
@@ -421,26 +430,21 @@ int update_record(const char *filename, char *primary_keys[], int num_keys, cons
             }
             strcat(updated_line, "\n");
 
-            if (!append_to_buffer(content, &content_len, updated_line))
+            if (strlen(content) + strlen(updated_line) >= MAX_FILE_SIZE)
             {
+                set_error_message("Error: Updated content would exceed maximum file size");
                 free(content);
                 fclose(fp);
-                for (int f = 0; f < field_count; f++) free(fields[f]);
                 return DATA_ERROR_BUFFER_OVERFLOW;
             }
+
+            strcat(content, updated_line);
             record_updated = 1;
         }
         else
         {
-            if (!append_to_buffer(content, &content_len, line_copy))
-            {
-                free(content);
-                fclose(fp);
-                for (int f = 0; f < field_count; f++) free(fields[f]);
-                return DATA_ERROR_BUFFER_OVERFLOW;
-            }
+            strcat(content, line_copy);
         }
-        for (int f = 0; f < field_count; f++) free(fields[f]);
     }
 
     fclose(fp);
@@ -504,7 +508,6 @@ int delete_record(const char *filename, char *primary_keys[], int num_keys)
         return DATA_ERROR_MEMORY_ALLOCATION;
     }
     content[0] = '\0';
-    size_t content_len = 0;
 
     char line[MAX_LINE_LENGTH];
     int record_deleted = 0;
@@ -527,21 +530,35 @@ int delete_record(const char *filename, char *primary_keys[], int num_keys)
     {
         line_number++;
 
+        if (strlen(content) + strlen(line) >= MAX_FILE_SIZE)
+        {
+            set_error_message("Error: File size would exceed maximum limit at line %d", line_number);
+            free(content);
+            fclose(fp);
+            return DATA_ERROR_BUFFER_OVERFLOW;
+        }
+
         char line_copy[MAX_LINE_LENGTH];
         strncpy(line_copy, line, sizeof(line_copy) - 1);
         line_copy[sizeof(line_copy) - 1] = '\0';
 
+        // Parse fields
         char *fields[MAX_FIELDS];
-        int field_count = split_csv_fields(line, fields, MAX_FIELDS, ',');
-        if (field_count <= 0)
+        char *token = strtok(line, ",");
+        int field_count = 0;
+        while (token && field_count < MAX_FIELDS)
         {
-            if (!append_to_buffer(content, &content_len, line_copy))
+            // Trim whitespace
+            while (*token == ' ' || *token == '\t')
+                token++;
+            char *end = token + strlen(token) - 1;
+            while (end > token && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r'))
             {
-                free(content);
-                fclose(fp);
-                return DATA_ERROR_BUFFER_OVERFLOW;
+                *end-- = '\0';
             }
-            continue;
+
+            fields[field_count++] = token;
+            token = strtok(NULL, ",");
         }
 
         // Check if this matches our primary keys
@@ -576,15 +593,8 @@ int delete_record(const char *filename, char *primary_keys[], int num_keys)
         else
         {
             // Keep this line
-            if (!append_to_buffer(content, &content_len, line_copy))
-            {
-                free(content);
-                fclose(fp);
-                for (int f = 0; f < field_count; f++) free(fields[f]);
-                return DATA_ERROR_BUFFER_OVERFLOW;
-            }
+            strcat(content, line_copy);
         }
-        for (int f = 0; f < field_count; f++) free(fields[f]);
     }
 
     fclose(fp);
