@@ -920,7 +920,7 @@ char *read_parliament_candidate(const char *candidate_number, const char *party_
         return NULL;
     }
 
-    char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH];
+...    char key1[MAX_LINE_LENGTH], key2[MAX_LINE_LENGTH];
     snprintf(key1, sizeof(key1), "0:%s", candidate_number);
     snprintf(key2, sizeof(key2), "1:%s", party_id);
     char *primary_keys[] = {key1, key2};

@@ -1,7 +1,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "entity_codec.h"
 // Reuse shared CSV splitter from csv_io for consistency
 #include "csv_io.h"
 
