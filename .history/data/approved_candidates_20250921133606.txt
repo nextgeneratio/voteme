@@ -1,0 +1,6 @@
+candidate_number,NIC,party_id,name, 
+1,987654321098,2,Jane Smith
+2,876543210987,1,Ali Khan
+3,765432109876,3,Sara Lee
+4,654321098765,4,Emily Wong
+5,543210987654,5,John Doe

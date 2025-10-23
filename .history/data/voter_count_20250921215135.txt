@@ -1,0 +1,2 @@
+voting_number,candidate_number,party_id,district_ count
+00001, 001, 01, 257 

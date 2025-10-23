@@ -1,0 +1,6 @@
+voting_number,NIC,name, district
+001,123456789012,John Doe
+002,234567890123,Jane Smith
+003,345678901234,Ali Khan
+004,456789012345,Sara Lee
+005,567890123456,Emily Wong
