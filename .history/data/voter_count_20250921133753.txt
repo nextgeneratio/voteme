@@ -1,0 +1,2 @@
+voting_number,candidate_number,party_id
+0001

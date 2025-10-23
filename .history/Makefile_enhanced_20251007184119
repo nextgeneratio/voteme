@@ -1,0 +1,186 @@
+# Makefile for Enhanced Data Handler with Comprehensive Error Handling
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -std=c99 -g -O0 -fstack-protector-all
+INCLUDES = -Isrc
+SRCDIR = src
+TESTDIR = .
+
+# Source files
+ENHANCED_SOURCES = $(SRCDIR)/data_handler_enhanced.c
+ENHANCED_HEADERS = $(SRCDIR)/data_handler_enhanced.h
+
+# Test files
+TEST_ENHANCED = test_enhanced_data_handler.c
+
+# Output binaries
+TEST_ENHANCED_BIN = test_enhanced_data_handler
+
+.PHONY: all clean test enhanced help
+
+# Default target
+all: enhanced
+
+# Enhanced version with comprehensive error handling
+enhanced: $(TEST_ENHANCED_BIN)
+
+$(TEST_ENHANCED_BIN): $(TEST_ENHANCED) $(ENHANCED_SOURCES) $(ENHANCED_HEADERS)
+	@echo "🔨 Compiling enhanced data handler with comprehensive error handling..."
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $(TEST_ENHANCED) $(ENHANCED_SOURCES)
+	@echo "✅ Enhanced version compiled successfully!"
+
+# Run tests
+test: enhanced
+	@echo ""
+	@echo "🧪 Running Enhanced Data Handler Test Suite..."
+	@echo "================================================"
+	./$(TEST_ENHANCED_BIN)
+
+# Run with memory checking (if valgrind is available)
+test-memory: enhanced
+	@echo ""
+	@echo "🔍 Running Enhanced Data Handler with Memory Checking..."
+	@echo "======================================================="
+	@if command -v valgrind >/dev/null 2>&1; then \
+		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(TEST_ENHANCED_BIN); \
+	else \
+		echo "⚠️  Valgrind not found, running without memory checking..."; \
+		./$(TEST_ENHANCED_BIN); \
+	fi
+
+# Performance benchmarking
+benchmark: enhanced
+	@echo ""
+	@echo "⚡ Running Performance Benchmark..."
+	@echo "=================================="
+	@echo "This will test the enhanced version's performance with error handling overhead..."
+	time ./$(TEST_ENHANCED_BIN)
+
+# Static analysis (if available)
+analyze: $(ENHANCED_SOURCES) $(ENHANCED_HEADERS)
+	@echo ""
+	@echo "🔍 Running Static Analysis..."
+	@echo "============================="
+	@if command -v cppcheck >/dev/null 2>&1; then \
+		cppcheck --enable=all --std=c99 --verbose $(ENHANCED_SOURCES); \
+	else \
+		echo "⚠️  cppcheck not found, skipping static analysis..."; \
+	fi
+
+# Code formatting check
+format-check: $(ENHANCED_SOURCES) $(ENHANCED_HEADERS) $(TEST_ENHANCED)
+	@echo ""
+	@echo "📝 Checking Code Formatting..."
+	@echo "=============================="
+	@if command -v clang-format >/dev/null 2>&1; then \
+		clang-format --dry-run --Werror $(ENHANCED_SOURCES) $(ENHANCED_HEADERS) $(TEST_ENHANCED); \
+		echo "✅ Code formatting is correct!"; \
+	else \
+		echo "⚠️  clang-format not found, skipping format check..."; \
+	fi
+
+# Security analysis
+security: $(ENHANCED_SOURCES) $(ENHANCED_HEADERS)
+	@echo ""
+	@echo "🔒 Running Security Analysis..."
+	@echo "==============================="
+	@if command -v flawfinder >/dev/null 2>&1; then \
+		flawfinder $(ENHANCED_SOURCES) $(ENHANCED_HEADERS); \
+	else \
+		echo "⚠️  flawfinder not found, skipping security analysis..."; \
+	fi
+
+# Clean build artifacts
+clean:
+	@echo "🧹 Cleaning build artifacts..."
+	rm -f $(TEST_ENHANCED_BIN)
+	rm -rf test_data
+	rm -f *.o *.so *.a
+	rm -f core core.*
+	rm -f vgcore.*
+	@echo "✅ Clean complete!"
+
+# Help target
+help:
+	@echo ""
+	@echo "Enhanced Data Handler Build System"
+	@echo "=================================="
+	@echo ""
+	@echo "Available targets:"
+	@echo "  all           - Build enhanced version (default)"
+	@echo "  enhanced      - Build enhanced data handler with error handling"
+	@echo "  test          - Run comprehensive test suite"
+	@echo "  test-memory   - Run tests with memory leak checking (requires valgrind)"
+	@echo "  benchmark     - Run performance benchmark"
+	@echo "  analyze       - Run static code analysis (requires cppcheck)"
+	@echo "  format-check  - Check code formatting (requires clang-format)"
+	@echo "  security      - Run security analysis (requires flawfinder)"
+	@echo "  clean         - Remove build artifacts and temporary files"
+	@echo "  help          - Show this help message"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make test           # Build and run all tests"
+	@echo "  make test-memory    # Run with memory checking"
+	@echo "  make benchmark      # Performance testing"
+	@echo "  make clean          # Clean everything"
+	@echo ""
+	@echo "Enhanced Features:"
+	@echo "  ✅ Comprehensive input validation"
+	@echo "  ✅ Buffer overflow protection"
+	@echo "  ✅ File permission checking"
+	@echo "  ✅ Detailed error reporting"
+	@echo "  ✅ Memory leak prevention"
+	@echo "  ✅ Backup and recovery"
+	@echo "  ✅ Data integrity validation"
+	@echo "  ✅ Thread-safe error handling"
+	@echo ""
+
+# Information about the enhanced version
+info:
+	@echo ""
+	@echo "Enhanced Data Handler Information"
+	@echo "================================="
+	@echo ""
+	@echo "New Error Handling Features:"
+	@echo "  • Comprehensive input validation"
+	@echo "  • Buffer overflow protection"
+	@echo "  • File permission checking"
+	@echo "  • Detailed error messages"
+	@echo "  • Memory allocation tracking"
+	@echo "  • Backup and recovery system"
+	@echo "  • Data format validation"
+	@echo "  • Range checking for numeric values"
+	@echo ""
+	@echo "Error Codes:"
+	@echo "  DATA_SUCCESS (1)              - Operation successful"
+	@echo "  DATA_ERROR_FILE_NOT_FOUND (-1) - File doesn't exist"
+	@echo "  DATA_ERROR_PERMISSION_DENIED (-2) - Access denied"
+	@echo "  DATA_ERROR_INVALID_INPUT (-3) - Invalid parameters"
+	@echo "  DATA_ERROR_MEMORY_ALLOCATION (-4) - Memory error"
+	@echo "  DATA_ERROR_BUFFER_OVERFLOW (-5) - Buffer exceeded"
+	@echo "  DATA_ERROR_MALFORMED_DATA (-6) - Data format error"
+	@echo "  DATA_ERROR_RECORD_NOT_FOUND (-7) - Record missing"
+	@echo "  DATA_ERROR_DISK_FULL (-8) - Storage error"
+	@echo ""
+	@echo "Safety Limits:"
+	@echo "  Max line length: $(shell grep MAX_LINE_LENGTH src/data_handler_enhanced.h | head -1 | awk '{print $$3}')"
+	@echo "  Max fields per record: $(shell grep MAX_FIELDS src/data_handler_enhanced.h | head -1 | awk '{print $$3}')"
+	@echo "  Max file size: MAX_LINE_LENGTH × 10,000 lines"
+	@echo ""
+
+# Test individual components
+test-validation:
+	@echo "🧪 Testing input validation only..."
+	./$(TEST_ENHANCED_BIN) 2>&1 | grep -A 20 "Testing Input Validation"
+
+test-crud:
+	@echo "🧪 Testing CRUD operations only..."
+	./$(TEST_ENHANCED_BIN) 2>&1 | grep -A 20 "Testing Enhanced CRUD Operations"
+
+test-entities:
+	@echo "🧪 Testing entity functions only..."
+	./$(TEST_ENHANCED_BIN) 2>&1 | grep -A 20 "Testing Entity-Specific Functions"
+
+# Debug build for development
+debug: CFLAGS += -DDEBUG -fsanitize=address -fsanitize=undefined
+debug: enhanced
+	@echo "🐛 Debug build complete with AddressSanitizer and UBSan enabled"

@@ -1,0 +1,2 @@
+voting_number,NIC,name, district_id
+0001,
