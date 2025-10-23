@@ -4,7 +4,7 @@ void clearscreen(void){
 	printf("\033[H\033[2J\033[3J");
 }
 
-void typewrite(const char s[], useconds_t delay){
+void typewrite(const char *s, useconds_t delay){
 	for(int i = 0; s[i] != '\0'; i++){
 		putchar(s[i]);
 		fflush(stdout);
@@ -19,7 +19,7 @@ void clearinputbuff(void){
 }
 
 void showbanner(void){
-	char buff[1000] = 
+	typewrite(
 	"\n" 
 	"---------------------------------------------------------------\n\n"
 	" /$$    /$$            /$$               /$$      /$$\n"
@@ -32,23 +32,18 @@ void showbanner(void){
 	"    \\_/    \\______/    \\___/   \\_______/|__/     |__/ \\_______/\n\n"
 
 	"---------------------------------------------------------------\n"
-	"\n";
-
-	typewrite(buff, 500);
+	"\n", 500);
 }
 
 void showabout(void){
-	char abouttext[1024];
 	clearscreen();
-	sprintf(abouttext,
+	typewrite(
 		"\n" CYAN_ON_BLACK "Developers: \n"
 		"\tTG/2024/2061 : M.H.M.Amjad\n"
 		"\tTG/2024/2098 : K.C.Nimash\n"
 		"\tTG/2024/2139 : W.K.C.Kalhara\n"
 		"\tTG/2021/2140 : A.J.C.Wickramasooriya\n"
-		RESET_COLORS
-	);
-	typewrite(abouttext, 1000);
+		RESET_COLORS, 1000);
 	printf("\n\n" RED_ON_BLACK "...PRESS ENTER TO GET BACK TO THE MAIN MENU...\n" RESET_COLORS);
 	fflush(stdout);
 	clearinputbuff();
@@ -59,15 +54,13 @@ void showmainmenu(void){
 	clearscreen();
 	printf(RED_ON_BLACK);
 	showbanner();
-	char menu[1024];
-	sprintf(menu,
+	typewrite(
 		"\n\t" CYAN_ON_BLACK "1" RESET_COLORS ") " CYAN_ON_BLACK "Admin" RESET_COLORS "\n"
 		"\t" CYAN_ON_BLACK "2" RESET_COLORS ") " CYAN_ON_BLACK "Candidate" RESET_COLORS "\n"
 		"\t" CYAN_ON_BLACK "3" RESET_COLORS ") " CYAN_ON_BLACK "Voter" RESET_COLORS "\n"
 		"\t" CYAN_ON_BLACK "4" RESET_COLORS ") " CYAN_ON_BLACK "About" RESET_COLORS "\n"
 		"\t" CYAN_ON_BLACK "0" RESET_COLORS ") " CYAN_ON_BLACK "Exit" RESET_COLORS "\n"
-        ); 
-	typewrite(menu, 800);
+        , 800);
 	char option;
 	for(;;){
 		printf("\n" RESET_COLORS "[" GREEN_ON_BLACK "*" RESET_COLORS "]" GREEN_ON_BLACK);
