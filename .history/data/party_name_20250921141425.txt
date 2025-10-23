@@ -1,0 +1,2 @@
+party_id,party_name
+01,Bell

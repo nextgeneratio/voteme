@@ -1,0 +1,156 @@
+# VoteMe System - Technical Documentation
+
+This document explains the internal workings of the CRUD (Create, Read, Update, Delete) 
+functions implemented in the VoteMe system.
+
+## Table of Contents
+1. [Architecture Overview](#architecture-overview)
+2. [File Structure](#file-structure)
+3. [Generic CRUD Functions](#generic-crud-functions)
+4. [Entity-Specific Functions](#entity-specific-functions)
+5. [Implementation Details](#implementation-details)
+
+## Architecture Overview
+
+The VoteMe system uses a simple file-based database with CSV-formatted text files for data storage. The system provides:
+
+1. Generic functions for handling CSV files
+2. Generic CRUD operations applicable to any data file
+3. Entity-specific wrappers for easier use with specific data types (candidates, voters, etc.)
+
+## File Structure
+
+The system uses the following text files to store data:
+- `approved_candidates.txt` - Primary key: `candidate_number`
+- `approved_voters.txt` - Primary key: `voting_number`
+- `parliament_candidates.txt` - Primary keys: `candidate_number` and `party_id`
+- `party_name.txt` - Primary key: `party_id`
+- `voter_count.txt` - Primary keys: `voting_number`, `candidate_number`, `party_id`, and `district_id`
+- `district.txt` - Primary key: `district_id`
+
+## Generic CRUD Functions
+
+### Create Record Function
+
+```c
+int create_record(const char *filename, const char *record);
+```
+
+**How it works:**
+1. Takes a filename and a formatted record string
+2. Calls `append_line` to add the record to the end of the file
+3. Returns 1 on success, 0 on failure
+
+### Read Record Function
+
+```c
+char* read_record(const char *filename, char *primary_keys[], int num_keys);
+```
+
+**How it works:**
+1. Opens the specified file for reading
+2. Skips the first line (header)
+3. For each line in the file:
+   a. Makes a copy of the line for returning if matched
+   b. Splits the line into fields using comma as delimiter
+   c. Compares each primary key field with the provided values
+   d. If all primary keys match, returns the line as a string
+4. Returns NULL if no match is found
+5. Note: The caller is responsible for freeing the returned string
+
+### Update Record Function
+
+```c
+int update_record(const char *filename, char *primary_keys[], int num_keys, const char *field_to_update);
+```
+
+**How it works:**
+1. Opens the specified file for reading
+2. Creates an empty string buffer to hold the updated file content
+3. Reads the header line and adds it to the buffer
+4. Parses the field_to_update parameter to get field_index and new_value
+5. For each subsequent line:
+   a. Checks if the line matches all primary keys
+   b. If matched:
+      - Creates a new line with the updated field value
+      - Adds this new line to the buffer
+      - Sets a flag indicating a record was updated
+   c. If not matched:
+      - Adds the original line to the buffer
+6. If a record was updated, overwrites the file with the new content
+7. Returns 1 on success, 0 on failure
+
+### Delete Record Function
+
+```c
+int delete_record(const char *filename, char *primary_keys[], int num_keys);
+```
+
+**How it works:**
+1. Opens the specified file for reading
+2. Creates an empty string buffer to hold the updated file content
+3. Reads the header line and adds it to the buffer
+4. For each subsequent line:
+   a. Checks if the line matches all primary keys
+   b. If matched:
+      - Skips the line (deleting it)
+      - Sets a flag indicating a record was deleted
+   c. If not matched:
+      - Adds the original line to the buffer
+5. If a record was deleted, overwrites the file with the new content
+6. Returns 1 on success, 0 on failure
+
+## Entity-Specific Functions
+
+Each entity type has specialized wrapper functions around the generic CRUD operations:
+
+### Candidate Functions
+
+- `create_candidate`: Formats a candidate record string and calls `create_record`
+- `read_candidate`: Creates a primary key array with candidate_number and calls `read_record`
+- `update_candidate`: Creates a field_to_update string based on field_index and calls `update_record`
+- `delete_candidate`: Creates a primary key array with candidate_number and calls `delete_record`
+
+### Voter Functions
+
+- `create_voter`: Formats a voter record string and calls `create_record`
+- `read_voter`: Creates a primary key array with voting_number and calls `read_record`
+- `update_voter`: Creates a field_to_update string based on field_index and calls `update_record`
+- `delete_voter`: Creates a primary key array with voting_number and calls `delete_record`
+
+Similar patterns apply to parties, districts, parliament candidates, and voter counts, with each having appropriate primary key handling.
+
+## Implementation Details
+
+### String Handling
+
+1. The system uses `strdup` for copying strings, which allocates memory - callers must free this memory
+2. All functions use fixed-size buffers (MAX_LINE_LENGTH) for string handling
+3. Whitespace is trimmed from fields when parsing CSV lines
+
+### CSV Parsing
+
+1. The `read_csv_line` function parses a line into fields using a specified delimiter
+2. All CSV operations assume the first line of the file is a header
+
+### Primary Key Format
+
+1. The format for primary keys is "field_index:value"
+2. For example, "0:0001" means field at index 0 should have value "0001"
+3. Multiple primary keys are handled as an array of these key strings
+
+### Error Handling
+
+1. Most functions return 1 for success and 0 for failure
+2. Read functions return NULL on failure
+3. No detailed error information is provided; basic error checks include:
+   - File opening failure
+   - Invalid field indexesflatpak run com.github.rajsolai.textsnatcher
+
+   - Missing or malformed primary keys
+
+### Memory Management
+
+1. Fixed-size buffers are used for line reading and writing
+2. Dynamic memory is allocated for read operations, which callers must free
+3. No memory is allocated in update or delete operations
