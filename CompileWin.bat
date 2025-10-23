@@ -1,5 +1,5 @@
 @echo off
-set outfile=bin\voteme.exe
+set outfile=voteme.exe
 set cflags=-Wall -Wextra
 @echo [*] Compiling...
 @gcc %cflags% src\* -o %outfile%
