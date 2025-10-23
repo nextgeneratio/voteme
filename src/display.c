@@ -73,12 +73,15 @@ void showmainmenu(void){
 		switch(option){
 			case '1':
 				/* Not implemented yet */
+				/* Admin Login */
 				break;
 			case '2':
 				/* Not implemented yet */
+				/* Candidate Login */
 				break;
 			case '3':
 				/* Not implemented yet */
+				/* Voter Login */
 				break;
 			case '4':
 				showabout();
