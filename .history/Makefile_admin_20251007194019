@@ -1,0 +1,255 @@
+# Enhanced VoteMe Admin System Makefile
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -std=c99 -g -O2 -D_GNU_SOURCE
+INCLUDES = -Isrc
+SRCDIR = src
+BINDIR = bin
+DATADIR = data
+
+# Source files
+ENHANCED_SOURCES = $(SRCDIR)/data_handler_enhanced.c
+ENHANCED_HEADERS = $(SRCDIR)/data_handler_enhanced.h
+ADMIN_SOURCE = $(SRCDIR)/admin.c
+VOTING_SOURCES = $(SRCDIR)/voting.c
+VOTING_HEADERS = $(SRCDIR)/voting.h
+
+# Output binaries
+ADMIN_BIN = $(BINDIR)/admin
+TEST_ENHANCED_BIN = test_enhanced_data_handler
+
+.PHONY: all clean admin test setup help run-admin
+
+# Default target
+all: setup admin
+
+# Create necessary directories
+setup:
+	@echo "🔧 Setting up project structure..."
+	@mkdir -p $(BINDIR)
+	@mkdir -p $(DATADIR)
+	@echo "✅ Project structure ready!"
+
+# Build admin system
+admin: setup $(ADMIN_BIN)
+
+$(ADMIN_BIN): $(ADMIN_SOURCE) $(ENHANCED_SOURCES) $(ENHANCED_HEADERS) $(VOTING_SOURCES) $(VOTING_HEADERS)
+	@echo "🔨 Building VoteMe Admin System..."
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $(ADMIN_SOURCE) $(ENHANCED_SOURCES) $(VOTING_SOURCES)
+	@echo "✅ Admin system compiled successfully!"
+
+# Build enhanced data handler tests
+test: $(TEST_ENHANCED_BIN)
+
+$(TEST_ENHANCED_BIN): test_enhanced_data_handler.c $(ENHANCED_SOURCES) $(ENHANCED_HEADERS)
+	@echo "🔨 Building enhanced data handler tests..."
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ test_enhanced_data_handler.c $(ENHANCED_SOURCES)
+	@echo "✅ Test suite compiled successfully!"
+
+# Run the admin system
+run-admin: admin
+	@echo ""
+	@echo "🚀 Starting VoteMe Admin System..."
+	@echo "=================================="
+	./$(ADMIN_BIN)
+
+# Initialize data files with headers
+init-data: setup
+	@echo "📁 Initializing data files with headers..."
+	@echo "voting_number,name,nic,district_id" > $(DATADIR)/approved_voters.txt
+	@echo "candidate_number,name,party_id,district_id,nic" > $(DATADIR)/approved_candidates.txt
+	@echo "party_id,party_name" > $(DATADIR)/party_name.txt
+	@echo "district_id,district_name" > $(DATADIR)/district.txt
+	@echo "candidate_number,party_id" > $(DATADIR)/parliament_candidates.txt
+	@echo "voting_number,candidate_number,party_id,district_id,count" > $(DATADIR)/voter_count.txt
+	@echo "✅ Data files initialized!"
+
+# Run comprehensive tests
+test-all: test
+	@echo ""
+	@echo "🧪 Running Comprehensive Test Suite..."
+	@echo "======================================"
+	./$(TEST_ENHANCED_BIN)
+
+# Clean build artifacts
+clean:
+	@echo "🧹 Cleaning build artifacts..."
+	@rm -f $(ADMIN_BIN)
+	@rm -f $(TEST_ENHANCED_BIN)
+	@rm -f *.o *.so *.a
+	@rm -rf test_data
+	@echo "✅ Clean complete!"
+
+# Clean everything including data
+clean-all: clean
+	@echo "🧹 Cleaning all data files..."
+	@rm -rf $(DATADIR)
+	@rm -rf $(BINDIR)
+	@echo "✅ Complete cleanup finished!"
+
+# Development shortcuts
+dev: clean all test-all
+	@echo "🎯 Development build complete!"
+
+# Production build
+prod: CFLAGS = -Wall -Wextra -std=c99 -O3 -DNDEBUG -D_GNU_SOURCE
+prod: clean setup admin
+	@echo "🚀 Production build complete!"
+
+# Demo setup with sample data
+demo: init-data
+	@echo "🎭 Setting up demo data..."
+	@echo "V001,John Doe,123456789V,D01" >> $(DATADIR)/approved_voters.txt
+	@echo "V002,Jane Smith,987654321V,D01" >> $(DATADIR)/approved_voters.txt
+	@echo "V003,Bob Johnson,456789123V,D02" >> $(DATADIR)/approved_voters.txt
+	@echo "C001,Alice Brown,P01,D01,111222333V" >> $(DATADIR)/approved_candidates.txt
+	@echo "C002,Charlie Davis,P02,D01,444555666V" >> $(DATADIR)/approved_candidates.txt
+	@echo "C003,Diana Wilson,P01,D02,777888999V" >> $(DATADIR)/approved_candidates.txt
+	@echo "P01,Progressive Party" >> $(DATADIR)/party_name.txt
+	@echo "P02,Conservative Party" >> $(DATADIR)/party_name.txt
+	@echo "P03,Liberal Party" >> $(DATADIR)/party_name.txt
+	@echo "D01,Central District" >> $(DATADIR)/district.txt
+	@echo "D02,Northern District" >> $(DATADIR)/district.txt
+	@echo "D03,Southern District" >> $(DATADIR)/district.txt
+	@echo "C001,P01" >> $(DATADIR)/parliament_candidates.txt
+	@echo "C002,P02" >> $(DATADIR)/parliament_candidates.txt
+	@echo "C003,P01" >> $(DATADIR)/parliament_candidates.txt
+	@echo "✅ Demo data created!"
+
+# Quick demo run
+demo-run: demo admin
+	@echo ""
+	@echo "🎭 Starting VoteMe Admin System with Demo Data..."
+	@echo "================================================="
+	./$(ADMIN_BIN)
+
+# Help target
+help:
+	@echo ""
+	@echo "VoteMe Admin System Build Commands"
+	@echo "=================================="
+	@echo ""
+	@echo "Build Commands:"
+	@echo "  make all           - Build admin system (default)"
+	@echo "  make admin         - Build admin system only"
+	@echo "  make test          - Build test suite"
+	@echo "  make setup         - Create directory structure"
+	@echo ""
+	@echo "Run Commands:"
+	@echo "  make run-admin     - Build and run admin system"
+	@echo "  make test-all      - Build and run all tests"
+	@echo "  make demo-run      - Setup demo data and run admin"
+	@echo ""
+	@echo "Data Management:"
+	@echo "  make init-data     - Initialize empty data files"
+	@echo "  make demo          - Create demo data for testing"
+	@echo ""
+	@echo "Development:"
+	@echo "  make dev           - Full development build with tests"
+	@echo "  make prod          - Optimized production build"
+	@echo ""
+	@echo "Cleanup:"
+	@echo "  make clean         - Remove build artifacts"
+	@echo "  make clean-all     - Remove everything (including data)"
+	@echo ""
+	@echo "Features of Admin System:"
+	@echo "  ✅ Complete CRUD operations for all entities"
+	@echo "  ✅ Interactive data viewing and browsing"
+	@echo "  ✅ System limit configuration and management"
+	@echo "  ✅ Real-time record counting and validation"
+	@echo "  ✅ Color-coded user interface"
+	@echo "  ✅ Comprehensive error handling"
+	@echo "  ✅ Backup and recovery features"
+	@echo ""
+
+# Show system status
+status:
+	@echo ""
+	@echo "VoteMe System Status"
+	@echo "==================="
+	@echo ""
+	@if [ -f $(ADMIN_BIN) ]; then \
+		echo "✅ Admin System: BUILT"; \
+	else \
+		echo "❌ Admin System: NOT BUILT"; \
+	fi
+	@if [ -f $(TEST_ENHANCED_BIN) ]; then \
+		echo "✅ Test Suite: BUILT"; \
+	else \
+		echo "❌ Test Suite: NOT BUILT"; \
+	fi
+	@if [ -d $(DATADIR) ]; then \
+		echo "✅ Data Directory: EXISTS"; \
+		echo "📊 Data Files:"; \
+		if [ -f $(DATADIR)/approved_voters.txt ]; then \
+			count=$$(tail -n +2 $(DATADIR)/approved_voters.txt 2>/dev/null | wc -l); \
+			echo "   approved_voters.txt: $$count records"; \
+		else \
+			echo "   approved_voters.txt: MISSING"; \
+		fi; \
+		if [ -f $(DATADIR)/approved_candidates.txt ]; then \
+			count=$$(tail -n +2 $(DATADIR)/approved_candidates.txt 2>/dev/null | wc -l); \
+			echo "   approved_candidates.txt: $$count records"; \
+		else \
+			echo "   approved_candidates.txt: MISSING"; \
+		fi; \
+		if [ -f $(DATADIR)/party_name.txt ]; then \
+			count=$$(tail -n +2 $(DATADIR)/party_name.txt 2>/dev/null | wc -l); \
+			echo "   party_name.txt: $$count records"; \
+		else \
+			echo "   party_name.txt: MISSING"; \
+		fi; \
+		if [ -f $(DATADIR)/district.txt ]; then \
+			count=$$(tail -n +2 $(DATADIR)/district.txt 2>/dev/null | wc -l); \
+			echo "   district.txt: $$count records"; \
+		else \
+			echo "   district.txt: MISSING"; \
+		fi; \
+		if [ -f $(DATADIR)/parliament_candidates.txt ]; then \
+			count=$$(tail -n +2 $(DATADIR)/parliament_candidates.txt 2>/dev/null | wc -l); \
+			echo "   parliament_candidates.txt: $$count records"; \
+		else \
+			echo "   parliament_candidates.txt: MISSING"; \
+		fi; \
+		if [ -f $(DATADIR)/voter_count.txt ]; then \
+			count=$$(tail -n +2 $(DATADIR)/voter_count.txt 2>/dev/null | wc -l); \
+			echo "   voter_count.txt: $$count records"; \
+		else \
+			echo "   voter_count.txt: MISSING"; \
+		fi; \
+	else \
+		echo "❌ Data Directory: MISSING"; \
+	fi
+	@echo ""
+
+# Validate data integrity
+validate:
+	@echo "🔍 Validating data integrity..."
+	@if [ -d $(DATADIR) ]; then \
+		for file in approved_voters.txt approved_candidates.txt party_name.txt district.txt; do \
+			if [ -f $(DATADIR)/$$file ]; then \
+				lines=$$(wc -l < $(DATADIR)/$$file); \
+				if [ $$lines -gt 0 ]; then \
+					echo "✅ $$file: $$lines lines"; \
+				else \
+					echo "⚠️  $$file: Empty file"; \
+				fi; \
+			else \
+				echo "❌ $$file: Missing"; \
+			fi; \
+		done; \
+	else \
+		echo "❌ Data directory missing!"; \
+	fi
+
+# Install system (copy to appropriate location)
+install: prod
+	@echo "📦 Installing VoteMe Admin System..."
+	@sudo cp $(ADMIN_BIN) /usr/local/bin/voteme-admin 2>/dev/null || cp $(ADMIN_BIN) ~/bin/voteme-admin 2>/dev/null || echo "⚠️  Could not install to system PATH"
+	@echo "✅ Installation complete!"
+	@echo "Run 'voteme-admin' from anywhere to start the system."
+
+# Uninstall system
+uninstall:
+	@echo "🗑️  Uninstalling VoteMe Admin System..."
+	@sudo rm -f /usr/local/bin/voteme-admin 2>/dev/null || rm -f ~/bin/voteme-admin 2>/dev/null || echo "⚠️  System installation not found"
+	@echo "✅ Uninstallation complete!"

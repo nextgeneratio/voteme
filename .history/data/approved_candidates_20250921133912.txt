@@ -1,0 +1,2 @@
+candidate_number,NIC,party_id,name, district_id
+001, 20001681

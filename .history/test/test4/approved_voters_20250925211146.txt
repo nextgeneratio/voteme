@@ -1,0 +1,2 @@
+voting_number,name, NIC, district_id
+John Doe, Mike, 200518975495, 01
