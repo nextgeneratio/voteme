@@ -1,0 +1,1 @@
+voting_number,candidate_number,party_id,district_id,count

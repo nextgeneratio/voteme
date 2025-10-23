@@ -1,0 +1,3 @@
+district_id,district_name
+D01,Metropolitan North
+D02,Metropolitan South

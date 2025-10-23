@@ -1,0 +1,4 @@
+party_id,party_name
+P001,Democratic Alliance
+P002,People's Progressive
+P003,National Unity
