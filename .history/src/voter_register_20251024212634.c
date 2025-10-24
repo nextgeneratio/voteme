@@ -10,7 +10,6 @@
 
 #define APPROVED_VOTERS_FILE "data/approved_voters.txt"
 #define SYSTEM_CONFIG_FILE "data/system_config.txt"
-#define DISTRICT_FILE "data/district.txt"
 
 // Utility: trim trailing newline and surrounding spaces
 static void trim(char *s)
@@ -38,103 +37,6 @@ static void prompt(const char *label, char *buf, size_t bufsz)
         return;
     }
     trim(buf);
-}
-
-// Display available districts from district.txt (ID and Name)
-static void print_available_districts(void)
-{
-    FILE *fp = fopen(DISTRICT_FILE, "r");
-    if (!fp)
-    {
-        printf("(District list not available: %s missing)\n", DISTRICT_FILE);
-        return;
-    }
-    char line[512];
-    int printed_header = 0;
-    while (fgets(line, sizeof line, fp))
-    {
-        // skip header
-        if (!printed_header)
-        {
-            printed_header = 1;
-            if (strncmp(line, "district_id,", 12) == 0)
-                continue;
-        }
-        // split into id,name
-        char *p = line;
-        while (*p == ' ' || *p == '\t')
-            p++;
-        char *comma = strchr(p, ',');
-        if (!comma)
-            continue;
-        *comma = '\0';
-        char *id = p;
-        char *name = comma + 1;
-        char *nl = strchr(name, '\n');
-        if (nl)
-            *nl = '\0';
-        trim(id);
-        trim(name);
-        if (*id)
-            printf(" - %s : %s\n", id, name[0] ? name : "(no name)");
-    }
-    fclose(fp);
-}
-
-// Validate if a district id exists in district.txt
-static bool is_valid_district_id(const char *district_id)
-{
-    FILE *fp = fopen(DISTRICT_FILE, "r");
-    if (!fp)
-        return true; // if list missing, don't block entry
-    char line[512];
-    int checked_header = 0;
-    while (fgets(line, sizeof line, fp))
-    {
-        if (!checked_header)
-        {
-            checked_header = 1;
-            if (strncmp(line, "district_id,", 12) == 0)
-                continue;
-        }
-        char *p = line;
-        while (*p == ' ' || *p == '\t')
-            p++;
-        char *comma = strchr(p, ',');
-        if (!comma)
-            continue;
-        *comma = '\0';
-        trim(p);
-        if (strcmp(p, district_id) == 0)
-        {
-            fclose(fp);
-            return true;
-        }
-    }
-    fclose(fp);
-    return false;
-}
-
-// Prompt for district id with list preview and validation loop
-static void prompt_for_district_id(char *out, size_t outsz)
-{
-    printf("Available Districts:\n");
-    print_available_districts();
-    while (1)
-    {
-        prompt("Enter District ID", out, outsz);
-        if (out[0] == '\0')
-        {
-            printf("District ID cannot be empty.\n");
-            continue;
-        }
-        if (!is_valid_district_id(out))
-        {
-            printf("Invalid District ID. Please choose one from the list above.\n");
-            continue;
-        }
-        break;
-    }
 }
 
 // Count data rows (excluding CSV header) in a file; returns -1 if file missing
@@ -374,7 +276,12 @@ static void createVoter(void)
         printf("Error: NIC already exists.\n");
         return;
     }
-    prompt_for_district_id(district_id, sizeof district_id);
+    prompt("Enter District ID", district_id, sizeof district_id);
+    if (district_id[0] == '\0')
+    {
+        printf("District ID cannot be empty.\n");
+        return;
+    }
 
     int rc = create_voter(voting_number, name, nic, district_id);
     if (rc == DATA_SUCCESS)
@@ -473,15 +380,7 @@ static void updateVoter(void)
     }
 
     char new_value[128];
-    if (choice == 3)
-    {
-        // District update: show list and validate
-        prompt_for_district_id(new_value, sizeof new_value);
-    }
-    else
-    {
-        prompt("Enter new value", new_value, sizeof new_value);
-    }
+    prompt("Enter new value", new_value, sizeof new_value);
     if (new_value[0] == '\0')
     {
         printf("Value cannot be empty.\n");
