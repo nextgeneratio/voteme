@@ -375,15 +375,6 @@ int update_temp_voted(const char *voting_number, const char *candidate_number, c
  */
 int clear_temp_voted(void);
 
-/**
- * Create a temp voted entry (appends a new row). Header is created if missing.
- * @param voting_number Unique voter identifier
- * @param candidate_number Candidate identifier to set
- * @param party_id Party identifier to set
- * @return DATA_SUCCESS on success, negative error code on failure
- */
-int create_temp_voted(const char *voting_number, const char *candidate_number, const char *party_id);
-
 /* ==== Usage Guidelines ==== */
 
 /*

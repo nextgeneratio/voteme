@@ -1054,33 +1054,6 @@ int delete_voter_count(const char *voting_number, const char *candidate_number,
 /* ---- Temp Voted List Functions (data/temp-voted-list.txt) ---- */
 // Schema: voting_number,candidate_number,party_id
 
-static int ensure_temp_voted_header(void)
-{
-    const char *path = "data/temp-voted-list.txt";
-    const char *header = "voting_number,candidate_number,party_id\n";
-    FILE *fp = fopen(path, "r");
-    if (!fp)
-    {
-        // Create with header
-        return overwrite_file(path, header);
-    }
-    char first[MAX_LINE_LENGTH];
-    first[0] = '\0';
-    if (fgets(first, sizeof(first), fp) == NULL)
-    {
-        // Empty file or read error -> ensure header exists
-        fclose(fp);
-        return overwrite_file(path, header);
-    }
-    fclose(fp);
-    // If file is empty or missing header, rewrite header (non-destructive would be nicer, but spec requires header present)
-    if (first[0] == '\0')
-    {
-        return overwrite_file(path, header);
-    }
-    return DATA_SUCCESS;
-}
-
 char *read_temp_voted(const char *voting_number)
 {
     if (!validate_string_input(voting_number, "voting_number", 50))
@@ -1135,27 +1108,4 @@ int clear_temp_voted(void)
     // Reset file to header only
     const char *header = "voting_number,candidate_number,party_id\n";
     return overwrite_file("data/temp-voted-list.txt", header);
-}
-
-int create_temp_voted(const char *voting_number, const char *candidate_number, const char *party_id)
-{
-    if (!validate_string_input(voting_number, "voting_number", 50) ||
-        !validate_string_input(candidate_number, "candidate_number", 50) ||
-        !validate_string_input(party_id, "party_id", 20))
-    {
-        return DATA_ERROR_INVALID_INPUT;
-    }
-
-    int rc = ensure_temp_voted_header();
-    if (rc != DATA_SUCCESS)
-        return rc;
-
-    char record[MAX_LINE_LENGTH];
-    int n = snprintf(record, sizeof(record), "%s, %s, %s", voting_number, candidate_number, party_id);
-    if (n <= 0 || n >= (int)sizeof(record))
-    {
-        set_error_message("Error: temp voted record exceeds maximum length");
-        return DATA_ERROR_BUFFER_OVERFLOW;
-    }
-    return append_line("data/temp-voted-list.txt", record);
 }

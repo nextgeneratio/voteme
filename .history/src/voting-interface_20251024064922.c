@@ -143,7 +143,7 @@ static int load_party_names(const char *parties_path, char *ids[], char *names[]
 }
 
 // Build unique list of party IDs that have at least one candidate
-static __attribute__((unused)) int collect_candidate_backed_parties(const char *candidates_path, char *out_ids[], int max_ids)
+static int collect_candidate_backed_parties(const char *candidates_path, char *out_ids[], int max_ids)
 {
     FILE *f = fopen(candidates_path, "r");
     if (!f)
@@ -180,7 +180,7 @@ static __attribute__((unused)) int collect_candidate_backed_parties(const char *
     return count;
 }
 
-static __attribute__((unused)) const char *lookup_party_name(const char *id, char *pids[], char *pnames[], int n)
+static const char *lookup_party_name(const char *id, char *pids[], char *pnames[], int n)
 {
     for (int i = 0; i < n; ++i)
         if (pids[i] && eq_party_id(pids[i], id))

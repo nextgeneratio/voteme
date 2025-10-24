@@ -162,7 +162,7 @@ int main(void)
     do
     {
         display_main_menu();
-        choice = get_user_choice("Enter your choice", 0, 7);
+    choice = get_user_choice("Enter your choice", 0, 7);
 
         switch (choice)
         {

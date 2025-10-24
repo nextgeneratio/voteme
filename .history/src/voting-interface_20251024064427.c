@@ -143,7 +143,7 @@ static int load_party_names(const char *parties_path, char *ids[], char *names[]
 }
 
 // Build unique list of party IDs that have at least one candidate
-static __attribute__((unused)) int collect_candidate_backed_parties(const char *candidates_path, char *out_ids[], int max_ids)
+static int collect_candidate_backed_parties(const char *candidates_path, char *out_ids[], int max_ids)
 {
     FILE *f = fopen(candidates_path, "r");
     if (!f)
@@ -180,7 +180,7 @@ static __attribute__((unused)) int collect_candidate_backed_parties(const char *
     return count;
 }
 
-static __attribute__((unused)) const char *lookup_party_name(const char *id, char *pids[], char *pnames[], int n)
+static const char *lookup_party_name(const char *id, char *pids[], char *pnames[], int n)
 {
     for (int i = 0; i < n; ++i)
         if (pids[i] && eq_party_id(pids[i], id))
@@ -441,13 +441,13 @@ int vote_for_candidate_interactive(void)
     // 3.5) Upsert temp voted list entry for this voter (best-effort; non-fatal on failure)
     {
         int rc = update_temp_voted(voter_id_copy, candidate_id, party_id);
+        if (rc == DATA_ERROR_RECORD_NOT_FOUND)
+        {
+            rc = create_temp_voted(voter_id_copy, candidate_id, party_id);
+        }
         if (rc != DATA_SUCCESS)
         {
-            int cr = create_temp_voted(voter_id_copy, candidate_id, party_id);
-            if (cr != DATA_SUCCESS)
-            {
-                fprintf(stderr, "Warning: failed to write temp voted list (update=%d, create=%d) - proceeding to record permanent vote.\n", rc, cr);
-            }
+            fprintf(stderr, "Warning: failed to update temp voted list (code %d) - proceeding to record permanent vote.\n", rc);
         }
     }
 

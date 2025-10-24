@@ -1066,12 +1066,7 @@ static int ensure_temp_voted_header(void)
     }
     char first[MAX_LINE_LENGTH];
     first[0] = '\0';
-    if (fgets(first, sizeof(first), fp) == NULL)
-    {
-        // Empty file or read error -> ensure header exists
-        fclose(fp);
-        return overwrite_file(path, header);
-    }
+    fgets(first, sizeof(first), fp);
     fclose(fp);
     // If file is empty or missing header, rewrite header (non-destructive would be nicer, but spec requires header present)
     if (first[0] == '\0')

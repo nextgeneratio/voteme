@@ -162,7 +162,7 @@ int main(void)
     do
     {
         display_main_menu();
-        choice = get_user_choice("Enter your choice", 0, 7);
+    choice = get_user_choice("Enter your choice", 0, 7);
 
         switch (choice)
         {
@@ -242,7 +242,6 @@ void display_main_menu(void)
     printf(YELLOW "4." RESET " 📈 " BOLD "System Status" RESET " - View current configuration\n");
     printf(YELLOW "5." RESET " 🗳️  " BOLD "Execute Voting" RESET " - Run voting algorithm and generate results\n");
     printf(YELLOW "6." RESET " 👤 " BOLD "Vote (Interactive)" RESET " - Validate voter and cast a vote\n");
-    printf(YELLOW "7." RESET " 🧹 " BOLD "Clear Temp Voted List" RESET " - Reset temporary voted list (header only)\n");
     printf(YELLOW "0." RESET " 🚪 " BOLD "Exit" RESET " - Save and quit\n\n");
 
     // Display quick status
