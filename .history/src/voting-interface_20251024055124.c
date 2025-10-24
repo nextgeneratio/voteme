@@ -188,7 +188,7 @@ static const char *lookup_party_name(const char *id, char *pids[], char *pnames[
     return NULL;
 }
 
-static int list_candidates_for_party(const char *candidates_path, const char *party_id, const char *party_name, char *out_ids[], int max_ids)
+static int list_candidates_for_party(const char *candidates_path, const char *party_id, char *out_ids[], int max_ids)
 {
     FILE *f = fopen(candidates_path, "r");
     if (!f)
@@ -197,10 +197,7 @@ static int list_candidates_for_party(const char *candidates_path, const char *pa
         return -1;
     }
     int count = 0;
-    if (party_name && *party_name)
-        printf("\nCandidates in selected party (%s - %s):\n", party_id, party_name);
-    else
-        printf("\nCandidates in selected party (%s):\n", party_id);
+    printf("\nCandidates in selected party (%s):\n", party_id);
     while (1)
     {
         char *fields[MAX_FIELDS] = {0};
@@ -298,21 +295,13 @@ int vote_for_candidate_interactive(void)
         printf("\nSelect a Party by entering Party ID (or 'q' to cancel): ");
         if (!fgets(buf, sizeof(buf), stdin))
         {
-            for (int i = 0; i < known_parties; ++i)
-            {
-                free(party_ids[i]);
-                free(party_names[i]);
-            }
+            for (int i = 0; i < known_parties; ++i) { free(party_ids[i]); free(party_names[i]); }
             return DATA_ERROR_MALFORMED_DATA;
         }
         trim_newline(buf);
         if (strcmp(buf, "q") == 0 || strcmp(buf, "Q") == 0)
         {
-            for (int i = 0; i < known_parties; ++i)
-            {
-                free(party_ids[i]);
-                free(party_names[i]);
-            }
+            for (int i = 0; i < known_parties; ++i) { free(party_ids[i]); free(party_names[i]); }
             printf("Cancelled.\n");
             return DATA_ERROR_INVALID_INPUT;
         }
@@ -348,20 +337,14 @@ int vote_for_candidate_interactive(void)
                 {
                     char *fields[MAX_FIELDS] = {0};
                     int nf = read_csv_line(cf, fields, MAX_FIELDS, ',');
-                    if (nf <= 0)
-                        break;
+                    if (nf <= 0) break;
                     if (nf >= 3)
                     {
                         trim_spaces(fields[2]);
-                        if (eq_party_id(fields[2], party_ids[sel_index]))
-                        {
-                            has = 1;
-                        }
+                        if (eq_party_id(fields[2], party_ids[sel_index])) { has = 1; }
                     }
-                    for (int j = 0; j < nf; ++j)
-                        free(fields[j]);
-                    if (has)
-                        break;
+                    for (int j = 0; j < nf; ++j) free(fields[j]);
+                    if (has) break;
                 }
                 fclose(cf);
             }
@@ -385,25 +368,8 @@ int vote_for_candidate_interactive(void)
     party_id[sizeof(party_id) - 1] = '\0';
 
     // 3) Show candidates filtered by selected party
-    char selected_party_name[MAX_LINE_LENGTH];
-    selected_party_name[0] = '\0';
-    {
-        // best-effort: find name from party list again
-        char *pids[256] = {0}, *pnames[256] = {0};
-        int n = load_party_names(parties_path, pids, pnames, 256);
-        for (int i = 0; i < n; ++i)
-        {
-            if (pids[i] && pnames[i] && eq_party_id(pids[i], party_id))
-            {
-                strncpy(selected_party_name, pnames[i], sizeof(selected_party_name) - 1);
-                selected_party_name[sizeof(selected_party_name) - 1] = '\0';
-            }
-            free(pids[i]);
-            free(pnames[i]);
-        }
-    }
     char *candidate_ids[128] = {0};
-    int cand_count = list_candidates_for_party(candidates_path, party_id, selected_party_name, candidate_ids, 128);
+    int cand_count = list_candidates_for_party(candidates_path, party_id, candidate_ids, 128);
     if (cand_count < 0)
         return DATA_ERROR_MALFORMED_DATA;
     if (cand_count == 0)
@@ -448,7 +414,7 @@ int vote_for_candidate_interactive(void)
         return DATA_ERROR_MALFORMED_DATA;
     }
 
-    char record[1024];
+    char record[MAX_LINE_LENGTH];
     snprintf(record, sizeof(record), "%s,%s", voter_id_copy, candidate_id);
     int err = append_line(votes_path, record);
     if (err != DATA_SUCCESS)

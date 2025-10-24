@@ -71,8 +71,6 @@ static const data_file_t data_files[] = {
     {"data/district.txt", "Electoral Districts", "district_id,district_name"},
     {"data/parliament_candidates.txt", "Parliament Candidates", "candidate_number,party_id"},
     {"data/voter_count.txt", "Vote Counts", "voting_number,candidate_number,party_id,district_id,count"},
-    {"data/votes.txt", "Votes (voter_id,candidate_id)", "voter_id,candidate_id"},
-    {"data/voting_results.txt", "Voting Results", ""},
     {NULL, NULL, NULL} // Sentinel
 };
 
@@ -162,7 +160,7 @@ int main(void)
     do
     {
         display_main_menu();
-        choice = get_user_choice("Enter your choice", 0, 6);
+        choice = get_user_choice("Enter your choice", 0, 5);
 
         switch (choice)
         {
@@ -183,22 +181,6 @@ int main(void)
         case 5:
             handle_voting_algorithm();
             break;
-        case 6:
-        {
-            int rc = vote_for_candidate_interactive();
-            if (rc == DATA_SUCCESS)
-            {
-                display_success("Vote recorded successfully.");
-            }
-            else
-            {
-                char msg[256];
-                snprintf(msg, sizeof(msg), "Failed to record vote: %s", get_last_error());
-                display_error(msg);
-            }
-            pause_for_user();
-            break;
-        }
         case 0:
             printf(GREEN "\n👋 Thank you for using VoteMe Admin System!\n" RESET);
             save_system_config();
@@ -383,10 +365,8 @@ void display_file_list(void)
     printf(BOLD BLUE "🔍 Select File to Browse\n" RESET);
     printf("═══════════════════════════\n\n");
 
-    int total = 0;
     for (int i = 0; data_files[i].filename != NULL; i++)
     {
-        total++;
         int count = count_records_in_file(data_files[i].filename);
         printf(YELLOW "%d." RESET " %s (%d records)\n",
                i + 1, data_files[i].description,
@@ -394,9 +374,9 @@ void display_file_list(void)
     }
     printf(YELLOW "0." RESET " ⬅️  Back\n\n");
 
-    int choice = get_user_choice("Enter file number", 0, total);
+    int choice = get_user_choice("Enter file number", 0, 6);
 
-    if (choice > 0 && choice <= total)
+    if (choice > 0 && choice <= 6)
     {
         view_specific_file(data_files[choice - 1].filename,
                            data_files[choice - 1].description);
@@ -474,13 +454,29 @@ void handle_system_limits(void)
         printf(YELLOW "5." RESET " ✅ Validate Current Settings\n");
         printf(YELLOW "0." RESET " ⬅️  Back to Main Menu\n\n");
 
-        choice = get_user_choice("Enter your choice", 0, 5);
+        choice = get_user_choice("Enter your choice", 0, 6);
 
         switch (choice)
         {
-        case 1:
+        case 5:
             modify_system_limits();
             break;
+        case 6:
+        {
+            int rc = vote_for_candidate_interactive();
+            if (rc == DATA_SUCCESS)
+            {
+                display_success("Vote recorded successfully.");
+            }
+            else
+            {
+                char msg[256];
+                snprintf(msg, sizeof(msg), "Failed to record vote: %s", get_last_error());
+                display_error(msg);
+            }
+            pause_for_user();
+            break;
+        }
         case 2:
             reset_to_defaults();
             display_success("System limits reset to default values!");

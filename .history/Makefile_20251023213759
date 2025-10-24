@@ -20,7 +20,6 @@ ADMIN_TARGET = $(BINDIR)/admin
 TEST_VOTING_TARGET = $(BINDIR)/test_voting
 TEST_DATA_SMOKE_TARGET = $(BINDIR)/test_data_smoke
 TEST_MODELS_TARGET = $(BINDIR)/test_models
-VOTE_TARGET = $(BINDIR)/vote
 
 # Colors for output
 GREEN = \033[0;32m
@@ -29,7 +28,7 @@ YELLOW = \033[0;33m
 RED = \033[0;31m
 NC = \033[0m # No Color
 
-.PHONY: all admin vote clean setup help status test tests install
+.PHONY: all admin clean setup help status test tests install
 
 # Default target builds admin
 all: setup admin
@@ -38,11 +37,6 @@ all: setup admin
 admin: setup $(ADMIN_TARGET)
 	@echo "$(GREEN)✅ Admin system built successfully!$(NC)"
 	@echo "$(BLUE)💡 Run with: ./$(ADMIN_TARGET)$(NC)"
-
-# Voter CLI only
-vote: setup $(VOTE_TARGET)
-	@echo "$(GREEN)✅ Voter CLI built successfully!$(NC)"
-	@echo "$(BLUE)💡 Run with: ./$(VOTE_TARGET)$(NC)"
 
 # Unit tests
 tests: setup $(TEST_VOTING_TARGET) $(TEST_DATA_SMOKE_TARGET) $(TEST_MODELS_TARGET)
@@ -59,10 +53,6 @@ setup:
 $(ADMIN_TARGET): $(ADMIN_OBJECTS)
 	@echo "$(BLUE)🔨 Linking admin application...$(NC)"
 	$(CC) $(CFLAGS) -o $@ $^
-
-$(VOTE_TARGET): $(SRCDIR)/vote_cli.c $(SRCDIR)/voting-interface.c $(SRCDIR)/voting-interface.h $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c
-	@echo "$(BLUE)🔨 Building voter CLI...$(NC)"
-	$(CC) $(CFLAGS) $(INCLUDES) $(SRCDIR)/vote_cli.c $(SRCDIR)/voting-interface.c $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c -o $@
 
 # Test binaries
 $(TEST_VOTING_TARGET): tests/test_voting.c $(SRCDIR)/voting.c $(SRCDIR)/voting.h $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/data_handler_enhanced.h $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c

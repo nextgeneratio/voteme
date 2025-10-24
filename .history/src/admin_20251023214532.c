@@ -162,7 +162,7 @@ int main(void)
     do
     {
         display_main_menu();
-        choice = get_user_choice("Enter your choice", 0, 6);
+        choice = get_user_choice("Enter your choice", 0, 5);
 
         switch (choice)
         {
@@ -183,22 +183,6 @@ int main(void)
         case 5:
             handle_voting_algorithm();
             break;
-        case 6:
-        {
-            int rc = vote_for_candidate_interactive();
-            if (rc == DATA_SUCCESS)
-            {
-                display_success("Vote recorded successfully.");
-            }
-            else
-            {
-                char msg[256];
-                snprintf(msg, sizeof(msg), "Failed to record vote: %s", get_last_error());
-                display_error(msg);
-            }
-            pause_for_user();
-            break;
-        }
         case 0:
             printf(GREEN "\n👋 Thank you for using VoteMe Admin System!\n" RESET);
             save_system_config();
