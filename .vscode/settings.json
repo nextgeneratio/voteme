@@ -1,3 +1,20 @@
 {
-    "C_Cpp.default.compilerPath": "/usr/bin/gcc"
+    // Use the system GCC and C99 so IntelliSense parses like our builds
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "C_Cpp.default.cStandard": "c99",
+    "C_Cpp.default.intelliSenseMode": "gcc-x64",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/src"
+    ],
+    // Exclude legacy/placeholder sources from static analysis to avoid red error decorations
+    "C_Cpp.files.exclude": {
+        "src/candidate_register.c": true,
+        "src/voter_register.c": true,
+        "src/display.c": true,
+        "src/main.c": true
+    },
+    // Reduce noise and speed up file watching by ignoring large history folder
+    "files.watcherExclude": {
+        "**/.history/**": true
+    }
 }

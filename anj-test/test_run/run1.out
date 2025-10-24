@@ -1,0 +1,13 @@
+Voting interface started. Press Ctrl+C to stop.
+
+Enter NIC/voter number: 
+Approved. Choose a party:
+  1) PartyA
+  2) PartyB
+Enter party number: 
+Candidates for PartyA:
+  1) Alice
+  2) Bob
+Enter candidate number: Vote recorded: 12345 -> PartyA (candidate: Bob) at 2025-10-23 17:37:35
+
+Enter NIC/voter number: 

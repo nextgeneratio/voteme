@@ -1,0 +1,171 @@
+Voting Interface (src/voting-interface.c) — Overview to Deep Dive
+=================================================================
+
+Purpose
+-------
+The voting interface drives an interactive, console-based flow for casting votes. It:
+- Validates the voter against approved_voters
+- Prevents double-voting using the temp voted list
+- Shows only parties that actually have candidates
+- Guides the user to pick a party and a candidate
+- Persists both a temporary record (audit/anti-duplication) and a permanent vote
+- Repeats continuously for multiple voters until the operator quits
+
+Data Files Used
+---------------
+- data/party_name.txt
+  Format: party_id,party_name
+  Purpose: names for parties displayed in the UI
+
+- data/approved_candidates.txt
+  Format: candidate_id,candidate_name,party_id,district_id,nic
+  Purpose: source of truth for parties-with-candidates and candidate lists
+
+- data/approved_voters.txt
+  Format: voting_number,name,nic,district_id
+  Purpose: whitelist of voters allowed to vote
+
+- data/temp-voted-list.txt
+  Header: voting_number,candidate_number,party_id
+  Purpose: record of who has already voted (prevents duplicate voting during the session)
+
+- data/votes.txt
+  Header: voter_id,candidate_id
+  Purpose: permanent record of cast votes
+
+High-Level Flow (Happy Path)
+----------------------------
+1) Loop forever until the operator enters 'q' at the voter ID prompt.
+2) Prompt for voter ID and validate it exists in approved_voters (read_voter).
+3) Check if this voter has already voted (read_temp_voted). If they have, skip them.
+4) Build a display list of parties that actually have candidates by intersecting party_name.txt with candidate-backed parties from approved_candidates.txt.
+5) Prompt for party selection (only these filtered parties are shown). 'q' cancels this voter only and returns to step 1.
+6) Show candidates for the selected party (from approved_candidates.txt) and prompt for candidate ID. 'q' cancels this voter and returns to step 1.
+7) Append a temp record: create_temp_voted(voting_number,candidate_number,party_id).
+8) Append the permanent vote to data/votes.txt (voter_id,candidate_id).
+9) Print confirmation and return to step 1 for the next voter.
+
+Core Prompts and Controls
+-------------------------
+- Enter your Voter ID (or 'q' to quit):
+  - 'q' ends the entire voting session loop.
+  - Empty input is rejected and re-prompted.
+
+- Select a Party by entering Party ID (or 'q' to cancel this voter):
+  - Only parties with at least one candidate are listed.
+  - 'q' cancels just this voter and returns to the voter ID prompt.
+
+- Select a Candidate by entering Candidate ID (or 'q' to cancel this voter):
+  - Lists candidates for the chosen party, showing “candidate_id - candidate_name”.
+  - 'q' cancels this voter and returns to the voter ID prompt.
+
+Important Helpers (Behavioral Details)
+--------------------------------------
+- trim_newline(char*): safely strips trailing newline/CR from fgets input.
+- trim_spaces(char*): trims ASCII whitespace at both ends of a string (robust CSV parsing).
+
+- normalize_party_id(const char* in, char* out, size_t outsz):
+  - Uppercases the ID and strips leading zeros after 'P', so P01, p001, and P001 all normalize consistently.
+- eq_party_id(const char* a, const char* b):
+  - Uses normalize_party_id to compare party IDs reliably across files that might have different zero padding.
+
+- load_party_names(parties_path, ids[], names[], max):
+  - Reads party_id→party_name pairs from data/party_name.txt into arrays for fast lookup and display.
+
+- collect_candidate_backed_parties(candidates_path, out_ids[], max):
+  - Scans data/approved_candidates.txt and returns a unique list of party IDs that actually have at least one candidate (normalized by eq_party_id). Used to filter the display list so voters only see viable parties.
+
+- list_candidates_for_party(candidates_path, party_id, party_name, out_ids[], max):
+  - Prints a header of the form “Candidates in selected party (PXX - Name):”
+  - Lists all candidate_id - candidate_name for the selected party (matching by eq_party_id)
+  - Collects candidate IDs in out_ids[] for subsequent validation of user input.
+
+- id_in_list(const char* id, char* ids[], int n):
+  - Checks if a string appears in the collected candidate ID list.
+
+- ensure_votes_file_exists(const char* path):
+  - Creates data/votes.txt with header voter_id,candidate_id if it doesn’t exist.
+
+Anti-duplication (Double Vote Prevention)
+----------------------------------------
+- Before a voter is allowed to choose a party/candidate, the code calls:
+  prev = read_temp_voted(voter_id)
+  - If prev is non-NULL, that means we already recorded a temp vote for this voter, so they’re blocked from voting again and the flow continues to the next voter.
+
+Temporary vs Permanent Records
+------------------------------
+- Temporary (data/temp-voted-list.txt):
+  - Appended immediately after a voter selects a candidate using:
+    create_temp_voted(voter_id, candidate_id, party_id)
+  - CSV format matches the header exactly: voting_number,candidate_number,party_id
+  - If temp write fails, the code logs a warning and still attempts to record the permanent vote. (You can tighten this policy if required.)
+
+- Permanent (data/votes.txt):
+  - Header: voter_id,candidate_id
+  - After ensuring the file exists with a header, the code appends “voter_id,candidate_id”.
+
+User Flow Example (Transcript)
+------------------------------
+Enter your Voter ID (or 'q' to quit): V1001
+Available parties (with candidates):
+  party_id - party_name
+  P01 - United National Party
+  P02 - People's Freedom Party
+
+Select a Party by entering Party ID (or 'q' to cancel this voter): P01
+
+Candidates in selected party (P01 - United National Party):
+  C101 - Alice Fernando
+  C103 - Priya Senanayake
+
+Select a Candidate by entering Candidate ID (or 'q' to cancel this voter): C101
+
+Your vote has been recorded. Next voter please.
+
+Enter your Voter ID (or 'q' to quit): V1001
+Voter 'V1001' has already voted (temp list found). Skipping.
+
+Enter your Voter ID (or 'q' to quit): q
+
+Edge Cases and Messages
+-----------------------
+- Empty voter ID: rejected with a clear message and re-prompted.
+- Unknown voter: “Voter ID 'X' not found or not approved.” and re-prompted.
+- Party list: only parties with candidates are displayed; invalid party input re-prompts.
+- Candidate list: invalid candidate ID re-prompts; 'q' cancels only that voter.
+- Double vote: detected via read_temp_voted; voter is skipped.
+- Printing header duplication: guarded so the “party_id - party_name” header prints once per party selection.
+
+How to Run (CLI)
+----------------
+Build and start the standalone voter CLI from the project root:
+
+  make vote
+  ./bin/vote
+
+Type 'q' at the voter ID prompt to end the session.
+
+Extensibility Notes
+-------------------
+- Stronger duplicate prevention:
+  - You can add an additional check against data/votes.txt (permanent record) to be resilient even if the temp list is cleared mid-session.
+
+- Filtering by districts:
+  - If needed, incorporate voter district and filter parties/candidates by district_id fields in approved_candidates.txt.
+
+- Admin integration:
+  - The Admin system includes a menu item to clear the temporary voted list (header preserved). This is helpful for session resets and demos.
+
+File/Function Index
+-------------------
+- src/voting-interface.c
+  - vote_for_candidate_interactive: entry point for interactive voting
+  - trim_newline, trim_spaces, normalize_party_id, eq_party_id
+  - load_party_names, collect_candidate_backed_parties
+  - list_candidates_for_party, id_in_list, ensure_votes_file_exists
+
+- src/data_handler_enhanced.c / .h
+  - read_voter, create_temp_voted, read_temp_voted
+  - CSV helpers: read_csv_line, split_csv_fields, append_line, overwrite_file
+
+By keeping the UI and the file operations modular, the interface remains robust to data inconsistencies (e.g., P01 vs P001) and easy to extend.

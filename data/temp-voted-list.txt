@@ -1,0 +1,4 @@
+voting_number,candidate_number,party_id
+V0003,C001,P01
+V0008,C211,P10
+V0004,C246,P08

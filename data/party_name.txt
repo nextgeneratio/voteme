@@ -1,4 +1,51 @@
 party_id,party_name
-P001,Democratic Alliance
-P002,People's Progressive
-P003,National Unity
+P01,United National Party
+P02,People's Freedom Party
+P03,Democratic Alliance
+P04,Sri Lanka Progressive Front
+P05,National Democratic Party
+P06,Social Justice Party
+P07,Freedom and Justice Party
+P08,People's Democratic Movement
+P09,Progressive People's Party
+P10,National Unity Party
+P11,Patriotic Front
+P12,Sri Lanka Reform Party
+P13,Democratic People's Alliance
+P14,Justice and Equality Party
+P15,National People's Congress
+P16,Progressive Democratic Front
+P17,Freedom Party of Sri Lanka
+P18,People's Rights Party
+P19,Sri Lanka National Front
+P20,Democratic Unity Party
+P21,Social Democratic Party
+P22,People's Reform Party
+P23,Progressive Unity Party
+P24,National Progressive Front
+P25,Democratic National Alliance
+P26,Justice Party of Sri Lanka
+P27,People's Unity Front
+P28,Sri Lanka People's Movement
+P29,National Justice Party
+P30,Freedom and Democracy Party
+P31,Democratic Reform Movement
+P32,People's Progressive Party
+P33,National Democratic Front
+P34,Progressive Rights Party
+P35,United People's Party
+P36,Social Justice Movement
+P37,Democratic People's Party
+P38,Freedom and Progress Party
+P39,National Reform Party
+P40,People's Unity Party
+P41,Sri Lanka Progressive Alliance
+P42,Democratic Front of Sri Lanka
+P43,National Rights Party
+P44,Progressive Democratic Party
+P45,Justice and Freedom Party
+P46,People's National Party
+P47,Sri Lanka Reform Alliance
+P48,Democratic Unity Front
+P49,National Progressive Party
+P50,People's Freedom Front
