@@ -303,8 +303,7 @@ int vote_for_candidate_interactive(void)
         int disp_idx[256]; // indices into party arrays
         for (int i = 0; i < known_parties; ++i)
         {
-            if (!party_ids[i])
-                continue;
+            if (!party_ids[i]) continue;
             int has = 0;
             for (int j = 0; j < backed_count; ++j)
             {
@@ -327,20 +326,15 @@ int vote_for_candidate_interactive(void)
         char party_id[MAX_LINE_LENGTH];
         char selected_party_name[MAX_LINE_LENGTH];
         selected_party_name[0] = '\0';
-        bool party_menu_printed = false;
         while (1)
         {
-            if (!party_menu_printed)
+            printf("\nAvailable parties (with candidates):\n");
+            printf("  party_id - party_name\n");
+            for (int k = 0; k < disp_count; ++k)
             {
-                printf("\nAvailable parties (with candidates):\n");
-                printf("  party_id - party_name\n");
-                for (int k = 0; k < disp_count; ++k)
-                {
-                    int i = disp_idx[k];
-                    if (party_ids[i] && party_names[i])
-                        printf("  %s - %s\n", party_ids[i], party_names[i]);
-                }
-                party_menu_printed = true;
+                int i = disp_idx[k];
+                if (party_ids[i] && party_names[i])
+                    printf("  %s - %s\n", party_ids[i], party_names[i]);
             }
 
             printf("\nSelect a Party by entering Party ID (or 'q' to cancel this voter): ");
@@ -395,8 +389,7 @@ int vote_for_candidate_interactive(void)
             if (cand_count <= 0)
             {
                 printf("No candidates found for selected party.\n");
-                for (int i = 0; i < cand_count; ++i)
-                    free(candidate_ids[i]);
+                for (int i = 0; i < cand_count; ++i) free(candidate_ids[i]);
                 goto next_voter;
             }
 
@@ -406,15 +399,13 @@ int vote_for_candidate_interactive(void)
                 if (!fgets(buf, sizeof(buf), stdin))
                 {
                     // input error -> cancel this voter
-                    for (int i = 0; i < cand_count; ++i)
-                        free(candidate_ids[i]);
+                    for (int i = 0; i < cand_count; ++i) free(candidate_ids[i]);
                     goto next_voter;
                 }
                 trim_newline(buf);
                 if (strcmp(buf, "q") == 0 || strcmp(buf, "Q") == 0)
                 {
-                    for (int i = 0; i < cand_count; ++i)
-                        free(candidate_ids[i]);
+                    for (int i = 0; i < cand_count; ++i) free(candidate_ids[i]);
                     goto next_voter;
                 }
                 if (buf[0] == '\0')
@@ -446,8 +437,7 @@ int vote_for_candidate_interactive(void)
             if (!ensure_votes_file_exists(votes_path))
             {
                 fprintf(stderr, "Failed to prepare votes file '%s' (%s)\n", votes_path, get_last_error());
-                for (int i = 0; i < cand_count; ++i)
-                    free(candidate_ids[i]);
+                for (int i = 0; i < cand_count; ++i) free(candidate_ids[i]);
                 goto next_voter;
             }
 
@@ -457,17 +447,16 @@ int vote_for_candidate_interactive(void)
             if (err != DATA_SUCCESS)
             {
                 fprintf(stderr, "Failed to record vote (code %d)\n", err);
-                for (int i = 0; i < cand_count; ++i)
-                    free(candidate_ids[i]);
+                for (int i = 0; i < cand_count; ++i) free(candidate_ids[i]);
                 goto next_voter;
             }
 
             printf("\nYour vote has been recorded. Next voter please.\n");
-            for (int i = 0; i < cand_count; ++i)
-                free(candidate_ids[i]);
+            for (int i = 0; i < cand_count; ++i) free(candidate_ids[i]);
         }
 
-    next_voter:; // continue outer loop for the next voter
+    next_voter:
+        ; // continue outer loop for the next voter
     }
 
     // cleanup preload arrays

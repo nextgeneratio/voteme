@@ -327,20 +327,15 @@ int vote_for_candidate_interactive(void)
         char party_id[MAX_LINE_LENGTH];
         char selected_party_name[MAX_LINE_LENGTH];
         selected_party_name[0] = '\0';
-        bool party_menu_printed = false;
         while (1)
         {
-            if (!party_menu_printed)
+            printf("\nAvailable parties (with candidates):\n");
+            printf("  party_id - party_name\n");
+            for (int k = 0; k < disp_count; ++k)
             {
-                printf("\nAvailable parties (with candidates):\n");
-                printf("  party_id - party_name\n");
-                for (int k = 0; k < disp_count; ++k)
-                {
-                    int i = disp_idx[k];
-                    if (party_ids[i] && party_names[i])
-                        printf("  %s - %s\n", party_ids[i], party_names[i]);
-                }
-                party_menu_printed = true;
+                int i = disp_idx[k];
+                if (party_ids[i] && party_names[i])
+                    printf("  %s - %s\n", party_ids[i], party_names[i]);
             }
 
             printf("\nSelect a Party by entering Party ID (or 'q' to cancel this voter): ");

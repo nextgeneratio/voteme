@@ -1008,3 +1008,5 @@ V100, Test Voter, NIC100, D01
 V777, Codec Voter, NICV777, D07
 V100, Test Voter, NIC100, D01
 V777, Codec Voter, NICV777, D07
+V100, Test Voter, NIC100, D01
+V777, Codec Voter, NICV777, D07
