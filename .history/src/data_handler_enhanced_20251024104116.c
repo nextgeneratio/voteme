@@ -1215,8 +1215,7 @@ int read_all_temp_voted(char ****out_records, int *out_rows, int *out_cols)
         int n = split_csv_fields(line_copy, fields, MAX_FIELDS, ',');
         if (n < 3)
         {
-            for (int i = 0; i < n; ++i)
-                free(fields[i]);
+            for (int i = 0; i < n; ++i) free(fields[i]);
             continue; // skip malformed lines silently
         }
 
@@ -1229,14 +1228,11 @@ int read_all_temp_voted(char ****out_records, int *out_rows, int *out_cols)
                 char *s = fields[i];
                 // local trim
                 char *start = s;
-                while (*start == ' ' || *start == '\t' || *start == '\r' || *start == '\n')
-                    start++;
+                while (*start == ' ' || *start == '\t' || *start == '\r' || *start == '\n') start++;
                 char *end = s + strlen(s);
-                while (end > start && (end[-1] == ' ' || end[-1] == '\t' || end[-1] == '\r' || end[-1] == '\n'))
-                    end--;
+                while (end > start && (end[-1] == ' ' || end[-1] == '\t' || end[-1] == '\r' || end[-1] == '\n')) end--;
                 size_t len = (size_t)(end - start);
-                if (start != s)
-                    memmove(s, start, len);
+                if (start != s) memmove(s, start, len);
                 s[len] = '\0';
             }
         }
@@ -1251,13 +1247,11 @@ int read_all_temp_voted(char ****out_records, int *out_rows, int *out_cols)
                 // cleanup and bail out
                 for (int r = 0; r < count; ++r)
                 {
-                    for (int c = 0; c < 3; ++c)
-                        free(rows[r][c]);
+                    for (int c = 0; c < 3; ++c) free(rows[r][c]);
                     free(rows[r]);
                 }
                 free(rows);
-                for (int i = 0; i < n; ++i)
-                    free(fields[i]);
+                for (int i = 0; i < n; ++i) free(fields[i]);
                 fclose(fp);
                 return DATA_ERROR_MEMORY_ALLOCATION;
             }
@@ -1271,13 +1265,11 @@ int read_all_temp_voted(char ****out_records, int *out_rows, int *out_cols)
         {
             for (int r = 0; r < count; ++r)
             {
-                for (int c = 0; c < 3; ++c)
-                    free(rows[r][c]);
+                for (int c = 0; c < 3; ++c) free(rows[r][c]);
                 free(rows[r]);
             }
             free(rows);
-            for (int i = 0; i < n; ++i)
-                free(fields[i]);
+            for (int i = 0; i < n; ++i) free(fields[i]);
             fclose(fp);
             return DATA_ERROR_MEMORY_ALLOCATION;
         }
@@ -1287,26 +1279,22 @@ int read_all_temp_voted(char ****out_records, int *out_rows, int *out_cols)
             row[c] = strdup(fields[c] ? fields[c] : "");
             if (!row[c])
             {
-                for (int k = 0; k < c; ++k)
-                    free(row[k]);
+                for (int k = 0; k < c; ++k) free(row[k]);
                 free(row);
                 for (int r = 0; r < count; ++r)
                 {
-                    for (int cc = 0; cc < 3; ++cc)
-                        free(rows[r][cc]);
+                    for (int cc = 0; cc < 3; ++cc) free(rows[r][cc]);
                     free(rows[r]);
                 }
                 free(rows);
-                for (int i = 0; i < n; ++i)
-                    free(fields[i]);
+                for (int i = 0; i < n; ++i) free(fields[i]);
                 fclose(fp);
                 return DATA_ERROR_MEMORY_ALLOCATION;
             }
         }
 
         rows[count++] = row;
-        for (int i = 0; i < n; ++i)
-            free(fields[i]);
+        for (int i = 0; i < n; ++i) free(fields[i]);
     }
 
     fclose(fp);
@@ -1319,8 +1307,7 @@ int read_all_temp_voted(char ****out_records, int *out_rows, int *out_cols)
 
 void free_temp_voted_records(char ***records, int rows, int cols)
 {
-    if (!records)
-        return;
+    if (!records) return;
     (void)cols; // cols is 3, currently unused
     for (int r = 0; r < rows; ++r)
     {

@@ -163,7 +163,7 @@ int main(void)
     do
     {
         display_main_menu();
-        choice = get_user_choice("Enter your choice", 0, 8);
+    choice = get_user_choice("Enter your choice", 0, 8);
 
         switch (choice)
         {
@@ -201,48 +201,6 @@ int main(void)
             break;
         }
         case 7:
-        {
-            char ***records = NULL;
-            int rows = 0, cols = 0;
-            int rc = read_all_temp_voted(&records, &rows, &cols);
-            if (rc != DATA_SUCCESS)
-            {
-                char msg[256];
-                snprintf(msg, sizeof(msg), "Failed to read temp voted list: %s", get_last_error());
-                display_error(msg);
-                pause_for_user();
-                break;
-            }
-            if (rows <= 0)
-            {
-                display_info("No temp voted records found.");
-                pause_for_user();
-                break;
-            }
-
-            // Print records in 2D array style: {{V0003,C001,P01},{...}}
-            printf("\nTemp Voted Records (%d):\n", rows);
-            printf("{");
-            for (int r = 0; r < rows; ++r)
-            {
-                printf("{");
-                for (int c = 0; c < cols; ++c)
-                {
-                    printf("%s", records[r][c] ? records[r][c] : "");
-                    if (c + 1 < cols)
-                        printf(",");
-                }
-                printf("}");
-                if (r + 1 < rows)
-                    printf(",");
-            }
-            printf("}\n\n");
-
-            free_temp_voted_records(records, rows, cols);
-            pause_for_user();
-            break;
-        }
-        case 8:
         {
             int rc = clear_temp_voted();
             if (rc == DATA_SUCCESS)
@@ -562,18 +520,62 @@ void handle_system_limits(void)
             {
                 display_success("All system limits are valid!");
             }
-            pause_for_user();
-            break;
-        default:
-            display_error("Invalid choice!");
-            pause_for_user();
-            break;
-        }
+            case 7:
+            {
+                char ***records = NULL;
+                int rows = 0, cols = 0;
+                int rc = read_all_temp_voted(&records, &rows, &cols);
+                if (rc != DATA_SUCCESS)
+                {
+                    char msg[256];
+                    snprintf(msg, sizeof(msg), "Failed to read temp voted list: %s", get_last_error());
+                    display_error(msg);
+                    pause_for_user();
+                    break;
+                }
+                if (rows <= 0)
+                {
+                    display_info("No temp voted records found.");
+                    pause_for_user();
+                    break;
+                }
 
-    } while (choice != 0);
-}
+                // Print records in 2D array style: {{V0003,C001,P01},{...}}
+                printf("\nTemp Voted Records (%d):\n", rows);
+                printf("{");
+                for (int r = 0; r < rows; ++r)
+                {
+                    printf("{");
+                    for (int c = 0; c < cols; ++c)
+                    {
+                        printf("%s", records[r][c] ? records[r][c] : "");
+                        if (c + 1 < cols) printf(",");
+                    }
+                    printf("}");
+                    if (r + 1 < rows) printf(",");
+                }
+                printf("}\n\n");
 
-void display_current_limits(void)
+                free_temp_voted_records(records, rows, cols);
+                pause_for_user();
+                break;
+            }
+            case 8:
+            {
+                int rc = clear_temp_voted();
+                if (rc == DATA_SUCCESS)
+                {
+                    display_success("Temporary voted list cleared (header preserved).");
+                }
+                else
+                {
+                    char msg[256];
+                    snprintf(msg, sizeof(msg), "Failed to clear temp voted list: %s", get_last_error());
+                    display_error(msg);
+                }
+                pause_for_user();
+                break;
+            }
 {
     printf(BOLD CYAN "Current System Configuration:\n" RESET);
     printf("╭─────────────────────────────────────────╮\n");

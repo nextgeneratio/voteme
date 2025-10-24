@@ -64,8 +64,7 @@ static int load_candidates(candidate_result_t candidates[], int max_candidates)
     if (!candidates_file)
     {
         printf(RED "❌ Error: Unable to open voting files!\n" RESET);
-        if (candidates_file)
-            fclose(candidates_file);
+        if (candidates_file) fclose(candidates_file);
         return 0;
     }
 
@@ -214,10 +213,9 @@ static int select_parliament_members(candidate_result_t candidates[], int candid
 
     int parliament_members = 0;
 
-    // Ignore min-vote threshold: always select top N
-    for (int i = 0; i < candidate_count; i++)
+    for (int i = 0; i < candidate_count && parliament_members < max_parliament_seats; i++)
     {
-        if (i < max_parliament_seats)
+        if (candidates[i].vote_count >= min_votes)
         {
             candidates[i].qualified_for_parliament = 1;
             parliament_members++;
@@ -284,7 +282,7 @@ static void generate_results_report(candidate_result_t candidates[], int candida
 
     for (int i = 0; i < candidate_count; i++)
     {
-        const char *status = candidates[i].qualified_for_parliament ? GREEN "✓ MP" RESET : RED "✗ Failed" RESET;
+        const char *status = candidates[i].qualified_for_parliament ? GREEN "✓ MP" RESET : (candidates[i].vote_count >= stats->min_votes_threshold ? YELLOW "~ Qualified" RESET : RED "✗ Failed" RESET);
 
         printf("│ %4d │ %-9s │ %-14s │ %-5s │ %-8s │ %5d │ %-12s │\n",
                i + 1, candidates[i].candidate_number, candidates[i].candidate_name,
@@ -405,8 +403,7 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
     }
 
     // Reset vote counts (safety) and count from chosen source
-    for (int i = 0; i < candidate_count; ++i)
-        candidates[i].vote_count = 0;
+    for (int i = 0; i < candidate_count; ++i) candidates[i].vote_count = 0;
     if (use_temp_list)
         count_votes_from_temp_list(candidates, candidate_count);
     else
@@ -426,11 +423,15 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
     int parliament_members = select_parliament_members(candidates, candidate_count,
                                                        min_votes_required, max_parliament_members);
 
-    // Count qualified candidates = selected top N (threshold ignored)
+    // Count qualified candidates (those meeting minimum vote requirement)
     int qualified_count = 0;
     for (int i = 0; i < candidate_count; i++)
-        if (candidates[i].qualified_for_parliament)
+    {
+        if (candidates[i].vote_count >= min_votes_required)
+        {
             qualified_count++;
+        }
+    }
 
     // Prepare statistics
     voting_statistics_t stats;

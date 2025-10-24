@@ -426,11 +426,15 @@ int execute_voting_algorithm(int min_votes_required, int max_parliament_members)
     int parliament_members = select_parliament_members(candidates, candidate_count,
                                                        min_votes_required, max_parliament_members);
 
-    // Count qualified candidates = selected top N (threshold ignored)
+    // Count qualified candidates (those meeting minimum vote requirement)
     int qualified_count = 0;
     for (int i = 0; i < candidate_count; i++)
-        if (candidates[i].qualified_for_parliament)
+    {
+        if (candidates[i].vote_count >= min_votes_required)
+        {
             qualified_count++;
+        }
+    }
 
     // Prepare statistics
     voting_statistics_t stats;
