@@ -17,6 +17,10 @@ ADMIN_OBJECTS = $(ADMIN_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 # Executables
 ADMIN_TARGET = $(BINDIR)/admin
+VOTEME_TARGET = $(BINDIR)/voteme
+VOTE_TARGET = $(BINDIR)/vote
+VOTER_REG_TARGET = $(BINDIR)/voter_register
+CAND_REG_TARGET = $(BINDIR)/candidate_register
 TEST_VOTING_TARGET = $(BINDIR)/test_voting
 TEST_DATA_SMOKE_TARGET = $(BINDIR)/test_data_smoke
 TEST_MODELS_TARGET = $(BINDIR)/test_models
@@ -30,7 +34,7 @@ YELLOW = \033[0;33m
 RED = \033[0;31m
 NC = \033[0m # No Color
 
-.PHONY: all admin vote clean setup help status test tests install
+.PHONY: all admin voteme vote voter-tools clean setup help status test tests install
 
 # Default target builds admin
 all: setup admin
@@ -40,7 +44,12 @@ admin: setup $(ADMIN_TARGET)
 	@echo "$(GREEN)✅ Admin system built successfully!$(NC)"
 	@echo "$(BLUE)💡 Run with: ./$(ADMIN_TARGET)$(NC)"
 
-# Voter CLI only
+# Unified main menu (display + main)
+voteme: setup $(VOTEME_TARGET)
+	@echo "$(GREEN)✅ Main menu built successfully!$(NC)"
+	@echo "$(BLUE)💡 Run with: ./$(VOTEME_TARGET)$(NC)"
+
+# Voter CLI only (full CLI build)
 vote: setup $(VOTE_TARGET)
 	@echo "$(GREEN)✅ Voter CLI built successfully!$(NC)"
 	@echo "$(BLUE)💡 Run with: ./$(VOTE_TARGET)$(NC)"
@@ -61,6 +70,33 @@ $(ADMIN_TARGET): $(ADMIN_OBJECTS)
 	@echo "$(BLUE)🔨 Linking admin application...$(NC)"
 	$(CC) $(CFLAGS) -o $@ $^
 
+# Voteme main menu app (standalone; calls other binaries)
+$(VOTEME_TARGET): $(OBJDIR)/main.o $(OBJDIR)/display.o
+	@echo "$(BLUE)🔨 Linking main menu application...$(NC)"
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Vote UI placeholder (ensures bin/vote exists for routing)
+vote: setup $(VOTE_TARGET)
+	@echo "$(GREEN)✅ Vote tool built successfully!$(NC)"
+	@echo "$(BLUE)💡 Run with: ./$(VOTE_TARGET)$(NC)"
+
+$(VOTE_TARGET): $(OBJDIR)/vote_main.o
+	@echo "$(BLUE)🔨 Linking vote tool...$(NC)"
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Voter/Candidate register placeholders (ensure binaries exist for routing)
+voter-tools: setup $(VOTER_REG_TARGET) $(CAND_REG_TARGET)
+	@echo "$(GREEN)✅ Voter/Candidate tools built successfully!$(NC)"
+
+$(VOTER_REG_TARGET): $(SRCDIR)/voter_register.c
+	@echo "$(BLUE)🔨 Building voter_register tool...$(NC)"
+	$(CC) $(CFLAGS) $(INCLUDES) $(SRCDIR)/voter_register.c -o $@
+
+$(CAND_REG_TARGET): $(SRCDIR)/candidate_register.c
+	@echo "$(BLUE)🔨 Building candidate_register tool...$(NC)"
+	$(CC) $(CFLAGS) $(INCLUDES) $(SRCDIR)/candidate_register.c -o $@
+
+# Full Voter CLI linking (real implementation)
 $(VOTE_TARGET): $(SRCDIR)/vote_cli.c $(SRCDIR)/voting-interface.c $(SRCDIR)/voting-interface.h $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c
 	@echo "$(BLUE)🔨 Building voter CLI...$(NC)"
 	$(CC) $(CFLAGS) $(INCLUDES) $(SRCDIR)/vote_cli.c $(SRCDIR)/voting-interface.c $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c -o $@
@@ -139,6 +175,7 @@ help:
 	@echo "$(YELLOW)Main Targets:$(NC)"
 	@echo "  make all          - Build admin (default)"
 	@echo "  make admin        - Build admin system only"
+	@echo "  make voteme       - Build unified main menu (bin/voteme)"
 	@echo ""
 	@echo "$(YELLOW)Development:$(NC)"
 	@echo "  make tests        - Build unit tests"
@@ -162,4 +199,4 @@ $(OBJDIR)/csv_io.o: $(SRCDIR)/csv_io.c $(SRCDIR)/csv_io.h $(SRCDIR)/data_handler
 $(OBJDIR)/data_errors.o: $(SRCDIR)/data_errors.c $(SRCDIR)/data_errors.h
 $(OBJDIR)/entity_codec.o: $(SRCDIR)/entity_codec.c $(SRCDIR)/entity_codec.h $(SRCDIR)/models.h $(SRCDIR)/csv_io.h
 $(OBJDIR)/entity_service.o: $(SRCDIR)/entity_service.c $(SRCDIR)/entity_service.h $(SRCDIR)/entity_codec.h $(SRCDIR)/models.h $(SRCDIR)/data_handler_enhanced.h
-## Removed legacy modules: voter_register, candidate_register, main, display
+## Removed legacy modules: voter_register, candidate_register

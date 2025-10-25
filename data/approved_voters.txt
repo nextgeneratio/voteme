@@ -1,5 +1,4 @@
 voting_number,name,nic,district_id
-voter_number,name,nic,district_id
 V0001,Michael Wilson,559147195V,D03
 V0002,Alice Smith,402138544V,D06
 V0003,Julia Harris,702914389V,D24
@@ -999,24 +998,6 @@ V0996,Charlie Anderson,249130686V,D10
 V0997,Sam Thomas,990088476V,D07
 V0998,Yasmin Thomas,797254272V,D11
 V0999,Wendy Martinez,996738649V,D05
-V1000,Alice Lee,503167294V,D20V100, Test Voter, NIC100, D01
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
-V100, Test Voter, NIC100, D01
-V777, Codec Voter, NICV777, D07
+V1000,Alice Lee,503167294V,D20
+V1001,Wendy Wednesday,230261882V,D16
+V1002,Wendy Octor,230261991V,D25
