@@ -1,0 +1,26 @@
+district_id,district_name
+D01,Colombo
+D02,Gampaha
+D03,Kalutara
+D04,Kandy
+D05,Matale
+D06,Nuwara Eliya
+D07,Galle
+D08,Matara
+D09,Hambantota
+D10,Jaffna
+D11,Kilinochchi
+D12,Mannar
+D13,Vavuniya
+D14,Mullaitivu
+D15,Batticaloa
+D16,Ampara
+D17,Trincomalee
+D18,Kurunegala
+D19,Puttalam
+D20,Anuradhapura
+D21,Polonnaruwa
+D22,Badulla
+D23,Monaragala
+D24,Ratnapura
+D25,Kegalle
