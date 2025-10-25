@@ -5,8 +5,6 @@
 #define RED_ON_BLACK "\033[1;31m"
 #define GREEN_ON_BLACK "\033[1;32m"
 #define CYAN_ON_BLACK "\033[1;36m"
-
-
-void typewrite(const char[], useconds_t);
+void typewrite(const char[], unsigned int);
 void clearscreen(void);
 void showmainmenu(void);
