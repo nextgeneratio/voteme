@@ -25,7 +25,6 @@ TEST_VOTING_TARGET = $(BINDIR)/test_voting
 TEST_DATA_SMOKE_TARGET = $(BINDIR)/test_data_smoke
 TEST_MODELS_TARGET = $(BINDIR)/test_models
 TEST_TEMP_VOTED_TARGET = $(BINDIR)/test_temp_voted
-VOTE_TARGET = $(BINDIR)/vote
 
 # Colors for output
 GREEN = \033[0;32m
@@ -49,7 +48,7 @@ voteme: setup $(VOTEME_TARGET)
 	@echo "$(GREEN)✅ Main menu built successfully!$(NC)"
 	@echo "$(BLUE)💡 Run with: ./$(VOTEME_TARGET)$(NC)"
 
-# Voter CLI only (full CLI build)
+## vote target
 vote: setup $(VOTE_TARGET)
 	@echo "$(GREEN)✅ Voter CLI built successfully!$(NC)"
 	@echo "$(BLUE)💡 Run with: ./$(VOTE_TARGET)$(NC)"
@@ -75,26 +74,29 @@ $(VOTEME_TARGET): $(OBJDIR)/main.o $(OBJDIR)/display.o
 	@echo "$(BLUE)🔨 Linking main menu application...$(NC)"
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Vote UI placeholder (ensures bin/vote exists for routing)
-vote: setup $(VOTE_TARGET)
-	@echo "$(GREEN)✅ Vote tool built successfully!$(NC)"
-	@echo "$(BLUE)💡 Run with: ./$(VOTE_TARGET)$(NC)"
-
-$(VOTE_TARGET): $(OBJDIR)/vote_main.o
-	@echo "$(BLUE)🔨 Linking vote tool...$(NC)"
-	$(CC) $(CFLAGS) -o $@ $^
+# Removed duplicate vote target and legacy vote_main linking
 
 # Voter/Candidate register placeholders (ensure binaries exist for routing)
 voter-tools: setup $(VOTER_REG_TARGET) $(CAND_REG_TARGET)
 	@echo "$(GREEN)✅ Voter/Candidate tools built successfully!$(NC)"
 
-$(VOTER_REG_TARGET): $(SRCDIR)/voter_register.c
+$(VOTER_REG_TARGET): $(SRCDIR)/voter_register.c $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c
 	@echo "$(BLUE)🔨 Building voter_register tool...$(NC)"
-	$(CC) $(CFLAGS) $(INCLUDES) $(SRCDIR)/voter_register.c -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) \
+		$(SRCDIR)/voter_register.c \
+		$(SRCDIR)/data_handler_enhanced.c \
+		$(SRCDIR)/csv_io.c \
+		$(SRCDIR)/data_errors.c \
+		-o $@
 
-$(CAND_REG_TARGET): $(SRCDIR)/candidate_register.c
+$(CAND_REG_TARGET): $(SRCDIR)/candidate_register.c $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c
 	@echo "$(BLUE)🔨 Building candidate_register tool...$(NC)"
-	$(CC) $(CFLAGS) $(INCLUDES) $(SRCDIR)/candidate_register.c -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) \
+		$(SRCDIR)/candidate_register.c \
+		$(SRCDIR)/data_handler_enhanced.c \
+		$(SRCDIR)/csv_io.c \
+		$(SRCDIR)/data_errors.c \
+		-o $@
 
 # Full Voter CLI linking (real implementation)
 $(VOTE_TARGET): $(SRCDIR)/vote_cli.c $(SRCDIR)/voting-interface.c $(SRCDIR)/voting-interface.h $(SRCDIR)/data_handler_enhanced.c $(SRCDIR)/csv_io.c $(SRCDIR)/data_errors.c
