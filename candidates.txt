@@ -1,0 +1,2 @@
+1,Sarath Kumara,200411800884,NPP,200000.00,Gannoruwa peradeniya,2000.00
+2,Amjad Hasan,200316513671,NPP,200000.00,Colombo 7,1000.00

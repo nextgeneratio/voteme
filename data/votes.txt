@@ -2,4 +2,3 @@ voter_id,candidate_id
 V001,C001
 V002,C001
 V003,C002
-V0013,C178
