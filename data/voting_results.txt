@@ -1,0 +1,20 @@
+# VoteMe Voting Results Report
+# Generated on: 2025-10-25 at 13:46:12
+
+[STATISTICS]
+total_candidates=2
+total_votes_cast=3
+qualified_candidates=2
+parliament_members_selected=2
+min_votes_threshold=2
+max_parliament_seats=5
+
+[PARLIAMENT_MEMBERS]
+candidate_number,name,party_id,district_id,votes,rank
+C001,Alice,P001,D01,2,1
+C002,Bob,P002,D01,1,2
+
+[ALL_RESULTS]
+candidate_number,name,party_id,district_id,votes,rank,qualified_for_parliament
+C001,Alice,P001,D01,2,1,YES
+C002,Bob,P002,D01,1,2,YES

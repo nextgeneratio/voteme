@@ -1,0 +1,19 @@
+# Build artifacts
+bin/
+obj/
+*.o
+*.exe
+
+# Editor and OS files
+.vscode/
+.idea/
+*.log
+*.DS_Store
+
+# History and CI leftovers (kept for safety even if removed)
+.history/
+.github/
+
+# Temporary data outputs
+data/voting_results.txt
+data/temp-voted-list.txt
