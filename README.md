@@ -23,9 +23,11 @@ We intentionally removed non-runtime files from this branch to keep it lean and 
 # Special Note
 If make file is not install run this command
 
-'''
+
+```
 sudo apt install make
-'''
+
+```
 
 1. Build
 
