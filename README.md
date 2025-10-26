@@ -20,6 +20,12 @@ We intentionally removed non-runtime files from this branch to keep it lean and 
   - Visual Studio (Developer Command Prompt for MSVC)
 
 ## Linux/macOS: build and run
+# Special Note
+If make file is not install run this command
+
+'''
+sudo apt install make
+'''
 
 1. Build
 
