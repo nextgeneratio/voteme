@@ -162,8 +162,8 @@ int main(void)
     int choice;
     do
     {
-        display_main_menu();
-        choice = get_user_choice("Enter your choice", 0, 8);
+    display_main_menu();
+    choice = get_user_choice("Enter your choice", 0, 9);
 
         switch (choice)
         {
@@ -181,6 +181,31 @@ int main(void)
             display_current_limits();
             pause_for_user();
             break;
+        case 9:
+        {
+            /* Top-level shortcut for candidate registration (external or internal) */
+            if (access("bin/candidate_register", X_OK) == 0)
+            {
+                display_info("Launching external candidate registration...");
+                int rc = system("./bin/candidate_register");
+                if (rc == -1)
+                {
+                    display_error("Failed to launch external candidate registration.");
+                    create_candidate_interactive();
+                }
+                else
+                {
+                    display_success("Returned from external candidate registration.");
+                }
+            }
+            else
+            {
+                display_info("External candidate registration not found - using internal flow.");
+                create_candidate_interactive();
+            }
+            pause_for_user();
+            break;
+        }
         case 5:
             handle_voting_algorithm();
             break;
@@ -287,6 +312,7 @@ void display_main_menu(void)
     printf(YELLOW "6." RESET " 👤 " BOLD "Vote (Interactive)" RESET " - Validate voter and cast a vote\n");
     printf(YELLOW "7." RESET " 📄 " BOLD "View Temp Voted List" RESET " - Show all temp voted records\n");
     printf(YELLOW "8." RESET " 🧹 " BOLD "Clear Temp Voted List" RESET " - Reset temporary voted list (header only)\n");
+    printf(YELLOW "9." RESET " 🏛️ " BOLD "Candidate Registration" RESET " - Quick candidate registration (external or internal)\n");
     printf(YELLOW "0." RESET " 🚪 " BOLD "Exit" RESET " - Save and quit\n\n");
 
     // Display quick status
@@ -366,8 +392,32 @@ void create_entity_menu(void)
         create_voter_interactive();
         break;
     case 2:
-        create_candidate_interactive();
+    {
+        /* Prefer an external candidate registration binary if available. */
+        if (access("bin/candidate_register", X_OK) == 0)
+        {
+            display_info("Launching external candidate registration...");
+            /* Use relative path; caller is expected to run from project root. */
+            int rc = system("./bin/candidate_register");
+            if (rc == -1)
+            {
+                display_error("Failed to launch external candidate registration.");
+                /* Fallback to internal interactive flow */
+                create_candidate_interactive();
+            }
+            else
+            {
+                display_success("Returned from external candidate registration.");
+            }
+        }
+        else
+        {
+            /* External binary not available - use internal implementation */
+            display_info("External candidate registration not found - using internal flow.");
+            create_candidate_interactive();
+        }
         break;
+    }
     case 3:
         create_party_interactive();
         break;
